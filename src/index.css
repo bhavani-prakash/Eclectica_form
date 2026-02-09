@@ -1,0 +1,274 @@
+/* ================= BASE RESET ================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  background: linear-gradient(135deg, #0a1628, #1a2f4f);
+  color: #ffffff;
+}
+
+/* ================= HERO ================= */
+.hero {
+  text-align: center;
+  padding: 90px 20px 40px;
+}
+
+.fest-name {
+  font-family: "Cinzel", serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(180deg, #f4d03f, #d4af37);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.big-letter {
+  font-size: 1.3em;
+}
+
+.year {
+  font-family: "Cinzel", serif;
+  font-size: 2rem;
+  letter-spacing: 0.25em;
+  margin-top: 5px;
+}
+
+.hero h2 {
+  margin-top: 20px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.hero-para {
+  margin-top: 10px;
+  font-size: 1rem;
+  opacity: 0.85;
+}
+.note-form {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #d4d234;
+}
+
+/* ================= FORM ================= */
+.registration-form {
+  max-width: 700px;
+  margin: 40px auto 80px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.registration-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #d4af37;
+  letter-spacing: 0.05em;
+}
+
+.registration-form input,
+.registration-form select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #ffffff;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.registration-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.registration-form select option {
+  color: #000;
+}
+
+.registration-form input:focus,
+.registration-form select:focus {
+  border-color: #f4d03f;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+}
+.payment-section {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.qr-image {
+  width: 220px;
+  height: auto;
+  margin: 10px 0;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+}
+
+.note {
+  font-size: 14px;
+  color: #d4d234;
+}
+
+.preview-image {
+  width: 200px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+
+
+/* ================= BUTTON ================= */
+.registration-form button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #d4af37, #f4d03f);
+  color: #0a1628;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.registration-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(212, 175, 55, 0.45);
+}
+
+.registration-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .fest-name {
+    font-size: 2.6rem;
+  }
+
+  .year {
+    font-size: 1.6rem;
+  }
+
+  .hero h2 {
+    font-size: 1.4rem;
+  }
+
+  .registration-form {
+    padding: 30px 25px;
+    margin: 30px 20px 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fest-name {
+    font-size: 2.2rem;
+  }
+
+  .year {
+    font-size: 1.3rem;
+  }
+
+  .hero-para {
+    font-size: 0.9rem;
+  }
+
+  .registration-form {
+    padding: 25px 20px;
+  }
+
+  .registration-form button {
+    font-size: 1rem;
+    padding: 14px;
+  }
+}
+
+
+/* ================= Admin login  STYLES ================= */
+
+/* Full-page center */
+.admin-login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card */
+.admin-login-card {
+  background: #ffffff;
+  padding: 40px 35px;
+  width: 360px;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+/* Heading */
+.admin-login-card h2 {
+  margin-bottom: 25px;
+  color: #2c5364;
+  font-weight: 600;
+}
+
+/* Inputs */
+.admin-login-card input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.admin-login-card input:focus {
+  border-color: #2c5364;
+  box-shadow: 0 0 0 2px rgba(44, 83, 100, 0.15);
+}
+
+/* Button */
+.admin-login-card button {
+  width: 100%;
+  padding: 12px;
+  background: #f8f53b;
+  color: #141414;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-login-card button:hover {
+  background: #433d20;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+}
+
+.admin-login-card button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
