@@ -13,7 +13,7 @@ const Admin = () => {
     const handleLogin = async () => {
     try {
       const res = await axios.post(
-        'http://localhost:5000/admin/login',
+        'https://eclectica-backend.onrender.com/admin/login',
         { email, password }
       );
 
