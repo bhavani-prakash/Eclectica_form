@@ -106,7 +106,7 @@ const Home = () => {
           <input
             type="email"
             id="email"
-            placeholder="College Email Address"
+            placeholder="College Email Address  (eg:rollnumber@mits.ac.in) "
             required
             onChange={(e) => setEmail(e.target.value)}
           />
