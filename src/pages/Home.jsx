@@ -59,7 +59,7 @@ const Home = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'https://eclectica-backend.onrender.com/api/register',
+        'https://eclecticabackend-production.up.railway.app/api/register',
         registrationData
       )
 

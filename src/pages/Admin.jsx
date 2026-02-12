@@ -13,7 +13,7 @@ const Admin = () => {
     const handleLogin = async () => {
     try {
       const res = await axios.post(
-        'https://eclectica-backend.onrender.com/admin/login',
+        'https://eclecticabackend-production.up.railway.app/admin/login',
         { email, password }
       );
 

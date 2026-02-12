@@ -23,7 +23,7 @@ const last24HoursCount = data.filter((reg) => {
       return;
     }
 
-    axios.get('https://eclectica-backend.onrender.com/admin/dashboard', {
+    axios.get('https://eclecticabackend-production.up.railway.app/admin/dashboard', {
       headers: {
         Authorization: `Bearer ${token}`
       }
