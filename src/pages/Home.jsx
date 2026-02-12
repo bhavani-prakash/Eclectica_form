@@ -102,11 +102,11 @@ const Home = () => {
             onChange={(e) => setName(e.target.value)}
           />
 
-          <label>Email Address</label>
+          <label> Collage Email Address</label>
           <input
             type="email"
             id="email"
-            placeholder="Email Address"
+            placeholder="College Email Address"
             required
             onChange={(e) => setEmail(e.target.value)}
           />
