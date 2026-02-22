@@ -20,7 +20,7 @@ const Home = () => {
   const [eventType, setEventType] = useState('')
   const [event, setEvent] = useState('')
   const [paymentScreenshot, setPaymentScreenshot] = useState(null);
-  const [screenshotUrl, setScreenshotUrl] = useState('');
+
   const [utrnumber, setUtrnumber] = useState('')
   const [loading, setLoading] = useState(false);
 
@@ -40,41 +40,46 @@ const Home = () => {
 
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const registrationData = {
-      name,
-      email,
-      college,
-      rollnumber,
-      contactnumber,
-      whatsappnumber,
-      year,
-      department,
-      event,
-      utrnumber,
-      paymentScreenshot: screenshotUrl // send the URL of the uploaded screenshot
-    }
+    const formData = new FormData();
 
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("college", college);
+    formData.append("rollnumber", rollnumber);
+    formData.append("contactnumber", contactnumber);
+    formData.append("whatsappnumber", whatsappnumber);
+    formData.append("year", year);
+    formData.append("department", department);
+    formData.append("event", event);
+    formData.append("utrnumber", utrnumber);
+    formData.append("paymentScreenshot", paymentScreenshot); // 🔥 FILE
+
+
+    // https://eclecticabackend-production.up.railway.app/api/register
     try {
       setLoading(true);
-      const response = await axios.post(
-        'https://eclecticabackend-production.up.railway.app/api/register',
-        registrationData
-      )
 
-      console.log(response.data)
-      navigate('/greeting')
+      await axios.post(
+        "https://eclecticabackend-production.up.railway.app/api/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      navigate("/greeting");
 
     } catch (error) {
-      console.error(error.response?.data || error.message)
-      alert('Registration failed. Please try again.')
-    }
-
-    finally {
+      console.error(error.response?.data || error.message);
+      alert("Registration failed. Please try again.");
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -228,18 +233,17 @@ const Home = () => {
           <input
             type="file"
             accept="image/*"
-            // required
+            required
             onChange={(e) => {
               const file = e.target.files[0];
               setPaymentScreenshot(file);
-              uploadScreenshot(file);
             }}
           />
 
-          {screenshotUrl && (
+          {paymentScreenshot && (
             <img
-              src={screenshotUrl}
-              alt="Payment Preview"
+              src={URL.createObjectURL(paymentScreenshot)}
+              alt="Preview"
               className="preview-image"
             />
           )}
