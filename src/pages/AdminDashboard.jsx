@@ -20,29 +20,17 @@ function AdminDashboard() {
 
   // ✅ Fetch Data
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-
-    if (!token) {
-      navigate("/");
-      return;
-    }
+    
 
     axios
       .get(
-        "https://eclecticabackend-production.up.railway.app/admin/dashboard",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+        "https://eclecticabackend-production.up.railway.app/admin/dashboard")
       .then((res) => setData(res.data.data))
       .catch(() => {
-        localStorage.removeItem("adminToken");
-        navigate("/");
+        console.error("Error fetching dashboard:", err);
       })
       .finally(() => setLoading(false));
-  }, [navigate]);
+  }, []);
 
   // ✅ Count Registrations Per Event
   const eventCounts = useMemo(() => {
@@ -181,8 +169,7 @@ function AdminDashboard() {
       <button
         className="logout-btn"
         onClick={() => {
-          localStorage.removeItem("adminToken");
-          navigate("/admin-loginECE");
+          navigate("/");
         }}
       >
         Logout
