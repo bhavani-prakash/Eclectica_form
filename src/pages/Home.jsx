@@ -258,7 +258,9 @@ const Home = () => {
             onChange={(e) => setUtrnumber(e.target.value)}
           />
 
-          <button type="submit">{loading ? "Submitting..." : "Submit"}</button>
+          <button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
+          
+          <p>{loading ? "We are submiting your rigistration so please wait Dont press back ": " "}</p>
         </form>
       </section>
     </div>
