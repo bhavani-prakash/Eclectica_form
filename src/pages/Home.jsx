@@ -61,8 +61,10 @@ const Home = () => {
     try {
       setLoading(true);
 
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
       await axios.post(
-        "https://eclecticabackend-production.up.railway.app/api/register",
+        `${API_URL}/api/register`,
         formData,
         {
           headers: {
