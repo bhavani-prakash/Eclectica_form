@@ -64,7 +64,13 @@ const Home = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const endpoint = `${API_URL}/api/register`;
       
+      console.log('Environment VITE_API_URL:', import.meta.env.VITE_API_URL);
       console.log('Sending request to:', endpoint);
+      console.log('FormData contents:', {
+        name, email, college, rollnumber, contactnumber, 
+        whatsappnumber, year, department, event, utrnumber,
+        hasScreenshot: !!paymentScreenshot
+      });
 
       await axios.post(
         endpoint,
@@ -73,6 +79,7 @@ const Home = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          timeout: 10000, // 10 second timeout
         }
       );
 
@@ -83,10 +90,25 @@ const Home = () => {
       console.error('Error response:', error.response?.data);
       console.error('Error message:', error.message);
       console.error('Error status:', error.response?.status);
+      console.error('API URL used:', import.meta.env.VITE_API_URL || 'localhost default');
       
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          "Registration failed. Please check your connection and try again.";
+      let errorMessage = "Registration failed. ";
+      
+      if (error.message === 'Network Error') {
+        errorMessage += "Cannot reach the server. Please check:\n" +
+                       "1. Backend server is running\n" +
+                       "2. Correct API URL is set\n" +
+                       "3. No firewall/CORS issues";
+      } else if (error.response?.status === 404) {
+        errorMessage += "API endpoint not found.";
+      } else if (error.response?.status === 500) {
+        errorMessage += "Server error: " + (error.response?.data?.message || "Unknown error");
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage += "Request timeout. Server took too long to respond.";
+      } else {
+        errorMessage += error.response?.data?.message || error.message || "Unknown error occurred.";
+      }
+      
       alert(errorMessage);
     } finally {
       setLoading(false);
