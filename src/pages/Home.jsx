@@ -61,7 +61,9 @@ const Home = () => {
     try {
       setLoading(true);
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      // Remove trailing slash if present
+      API_URL = API_URL.replace(/\/$/, '');
       const endpoint = `${API_URL}/api/register`;
       
       console.log('Environment VITE_API_URL:', import.meta.env.VITE_API_URL);
