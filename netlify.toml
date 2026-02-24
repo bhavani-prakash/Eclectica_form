@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # For production deployment, set your backend API URL
+  VITE_API_URL = "https://your-backend-url.railway.app"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

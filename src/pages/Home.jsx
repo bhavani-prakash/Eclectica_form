@@ -62,9 +62,12 @@ const Home = () => {
       setLoading(true);
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const endpoint = `${API_URL}/api/register`;
+      
+      console.log('Sending request to:', endpoint);
 
       await axios.post(
-        `${API_URL}/api/register`,
+        endpoint,
         formData,
         {
           headers: {
@@ -76,8 +79,15 @@ const Home = () => {
       navigate("/greeting");
 
     } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert("Registration failed. Please try again.");
+      console.error('Full error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error message:', error.message);
+      console.error('Error status:', error.response?.status);
+      
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Registration failed. Please check your connection and try again.";
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
