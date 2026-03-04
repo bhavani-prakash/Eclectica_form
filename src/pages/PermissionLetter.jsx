@@ -58,24 +58,54 @@ const PermissionLetter = () => {
       const endpoint = `${API_URL.replace(/\/$/, '')}/api/permission-letter-pdf`;
       const response = await axios.post(endpoint, { rollnumber, event }, { responseType: 'blob' });
       
-      // Create blob URL and trigger download
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `permission_letter_${rollnumber}_${event.replace(/\s+/g, '_')}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      setLetter('PDF downloaded successfully!');
+      // Check if response is actually a PDF
+      if (response.headers['content-type'] && response.headers['content-type'].includes('application/pdf')) {
+        // Create blob URL and trigger download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `permission_letter_${rollnumber}_${event.replace(/\s+/g, '_')}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        setLetter('PDF downloaded successfully!');
+      } else {
+        // Response is not a PDF, might be error JSON
+        const text = await response.data.text();
+        setError('Unexpected response: ' + text);
+      }
     } catch (err) {
       console.error('Permission letter PDF error:', err);
-      console.error('Response:', err.response?.data);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+      console.error('Error status:', err.response?.status);
+      console.error('Error data:', err.response?.data);
+      console.error('Error message:', err.message);
+      
+      if (err.response) {
+        // Server responded with error status
+        if (err.response.status === 404) {
+          setError('No registration found for this roll number and event.');
+        } else if (err.response.status === 400) {
+          setError('Invalid input. Please check your roll number and event.');
+        } else if (err.response.status === 500) {
+          setError('Server error. Please try again later.');
+        } else {
+          try {
+            // Try to parse error message from blob
+            const errorText = await err.response.data.text();
+            const errorJson = JSON.parse(errorText);
+            setError(errorJson.message || `Error: ${err.response.status}`);
+          } catch {
+            setError(`Error: ${err.response.status}`);
+          }
+        }
+      } else if (err.request) {
+        // Request made but no response
+        setError('No response from server. Please check your connection.');
       } else {
-        setError('Failed to generate permission letter PDF.');
+        // Something else happened
+        setError('Error: ' + err.message);
       }
     } finally {
       setPdfLoading(false);
