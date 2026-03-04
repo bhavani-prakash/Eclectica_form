@@ -19,10 +19,8 @@ const Home = () => {
   const [department, setDepartment] = useState('')
   const [eventType, setEventType] = useState('')
   const [event, setEvent] = useState('')
-  const [paymentScreenshot, setPaymentScreenshot] = useState(null);
-
-  const [utrnumber, setUtrnumber] = useState('')
   const [loading, setLoading] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(100); // Payment amount in INR
 
   const technicalEvents = [
     'Paper Presentation',
@@ -38,83 +36,102 @@ const Home = () => {
     'Debate'
   ];
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("college", college);
-    formData.append("rollnumber", rollnumber);
-    formData.append("contactnumber", contactnumber);
-    formData.append("whatsappnumber", whatsappnumber);
-    formData.append("year", year);
-    formData.append("department", department);
-    formData.append("event", event);
-    formData.append("utrnumber", utrnumber);
-    formData.append("paymentScreenshot", paymentScreenshot); // 🔥 FILE
-
-
-    // https://eclecticabackend-production.up.railway.app/api/register
+  // Function to create Razorpay order
+  const createOrder = async () => {
     try {
       setLoading(true);
-
-      let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      // Remove trailing slash if present
-      API_URL = API_URL.replace(/\/$/, '');
-      const endpoint = `${API_URL}/api/register`;
+      const endpoint = `${API_URL.replace(/\/$/, '')}/api/create-order`;
       
-      console.log('Environment VITE_API_URL:', import.meta.env.VITE_API_URL);
-      console.log('Sending request to:', endpoint);
-      console.log('FormData contents:', {
-        name, email, college, rollnumber, contactnumber, 
-        whatsappnumber, year, department, event, utrnumber,
-        hasScreenshot: !!paymentScreenshot
+      const response = await axios.post(endpoint, {
+        email,
+        name,
+        rollnumber,
+        event
       });
 
-      await axios.post(
-        endpoint,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          timeout: 10000, // 10 second timeout
-        }
-      );
-
-      navigate("/greeting");
-
-    } catch (error) {
-      console.error('Full error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error message:', error.message);
-      console.error('Error status:', error.response?.status);
-      console.error('API URL used:', import.meta.env.VITE_API_URL || 'localhost default');
-      
-      let errorMessage = "Registration failed. ";
-      
-      if (error.message === 'Network Error') {
-        errorMessage += "Cannot reach the server. Please check:\n" +
-                       "1. Backend server is running\n" +
-                       "2. Correct API URL is set\n" +
-                       "3. No firewall/CORS issues";
-      } else if (error.response?.status === 404) {
-        errorMessage += "API endpoint not found.";
-      } else if (error.response?.status === 500) {
-        errorMessage += "Server error: " + (error.response?.data?.message || "Unknown error");
-      } else if (error.code === 'ECONNABORTED') {
-        errorMessage += "Request timeout. Server took too long to respond.";
-      } else {
-        errorMessage += error.response?.data?.message || error.message || "Unknown error occurred.";
+      // Set payment amount from backend response
+      if (response.data.eventFee) {
+        setPaymentAmount(response.data.eventFee);
       }
-      
-      alert(errorMessage);
-    } finally {
+
+      return response.data.orderId;
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('Failed to create order. Please try again.');
       setLoading(false);
+      return null;
     }
+  };
+
+  // Function to handle Razorpay payment
+  const handlePayment = async (e) => {
+    e.preventDefault();
+
+    // Validate form
+    if (!name || !email || !college || !rollnumber || !contactnumber || 
+        !whatsappnumber || !year || !department || !event) {
+      alert('Please fill in all fields');
+      setLoading(false);
+      return;
+    }
+
+    // Create order
+    const orderId = await createOrder();
+    if (!orderId) return;
+
+    // Prepare Razorpay options
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'YOUR_RAZORPAY_KEY_ID',
+      amount: paymentAmount * 100,
+      currency: 'INR',
+      name: 'ECLECTICA 2K26',
+      description: event,
+      order_id: orderId,
+      handler: async (response) => {
+        try {
+          // Verify payment on backend
+          const verifyEndpoint = `${API_URL.replace(/\/$/, '')}/api/verify-payment`;
+          
+          const verifyResponse = await axios.post(verifyEndpoint, {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            name,
+            email,
+            college,
+            rollnumber,
+            contactnumber,
+            whatsappnumber,
+            year,
+            department,
+            event
+          });
+
+          if (verifyResponse.data.success) {
+            alert('Registration successful! Confirmation email sent.');
+            navigate('/greeting');
+          }
+        } catch (error) {
+          console.error('Payment verification failed:', error);
+          alert('Payment verification failed. Please contact support.');
+        } finally {
+          setLoading(false);
+        }
+      },
+      prefill: {
+        name: name,
+        email: email,
+        contact: contactnumber
+      },
+      theme: {
+        color: '#3399cc'
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -133,13 +150,14 @@ const Home = () => {
       </section>
 
       <section className="form">
-        <form className="registration-form" onSubmit={handleSubmit}>
+        <form className="registration-form" onSubmit={handlePayment}>
           <label>Full Name</label>
           <input
             type="text"
             id="name"
             placeholder="Full Name"
             required
+            value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
@@ -149,6 +167,7 @@ const Home = () => {
             id="email"
             placeholder="College Email Address  (eg:rollnumber@mits.ac.in) "
             required
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -158,6 +177,7 @@ const Home = () => {
             id="college"
             placeholder="College Name"
             required
+            value={college}
             onChange={(e) => setCollege(e.target.value)}
           />
 
@@ -167,6 +187,7 @@ const Home = () => {
             id="rollnumber"
             placeholder="Roll Number"
             required
+            value={rollnumber}
             onChange={(e) => setRollnumber(e.target.value)}
           />
 
@@ -176,6 +197,7 @@ const Home = () => {
             id="contactnumber"
             placeholder="Contact Number"
             required
+            value={contactnumber}
             onChange={(e) => setContactnumber(e.target.value)}
           />
 
@@ -185,6 +207,7 @@ const Home = () => {
             id="whatsappnumber"
             placeholder="WhatsApp Number"
             required
+            value={whatsappnumber}
             onChange={(e) => setWhatsappnumber(e.target.value)}
           />
 
@@ -211,6 +234,7 @@ const Home = () => {
             id="department"
             placeholder="Department"
             required
+            value={department}
             onChange={(e) => setDepartment(e.target.value)}
           />
 
@@ -252,56 +276,19 @@ const Home = () => {
 
           <div className="payment-section">
             <h3>Payment</h3>
-            <p>Scan the PhonePe QR code to complete the payment</p>
-
-            <img
-              // src={phonepeQR}
-              alt="PhonePe QR Code"
-              className="qr-image"
-            />
-
-            <p className="note">
-              After payment, enter the <strong>UTR number</strong> below
-            </p>
+            <p>Registration Fee: ₹{paymentAmount}</p>
+            <p>Click the button below to complete payment via Razorpay</p>
           </div>
 
-          <label>Payment Screenshot</label>
-          <input
-            type="file"
-            accept="image/*"
-            required
-            onChange={(e) => {
-              const file = e.target.files[0];
-              setPaymentScreenshot(file);
-            }}
-          />
-
-          {paymentScreenshot && (
-            <img
-              src={URL.createObjectURL(paymentScreenshot)}
-              alt="Preview"
-              className="preview-image"
-            />
-          )}
-
-
-          <label>UTR Number</label>
-          <input
-            type="text"
-            id="utrnumber"
-            placeholder="UTR Number"
-            required
-            onChange={(e) => setUtrnumber(e.target.value)}
-          />
-
-          <button type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Processing..." : `Pay ₹${paymentAmount} & Register`}
+          </button>
           
-          <p>{loading ? "We are submiting your rigistration so please wait Dont press back ": " "}</p>
+          <p>{loading ? "Please complete the payment to register. Do not refresh the page." : " "}</p>
         </form>
       </section>
     </div>
   )
 }
-//  disabled={!screenshotUrl || loading}
 
 export default Home

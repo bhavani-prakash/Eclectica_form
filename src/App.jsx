@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Greeting from "./pages/Greeting";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
+import PermissionLetter from "./pages/PermissionLetter";
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
       <Route path="/greeting" element={<Greeting />} />
       <Route path="/admin-loginECE" element={<Admin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+      <Route path="/permission-letter" element={<PermissionLetter />} />
     </Routes>
   );
 };

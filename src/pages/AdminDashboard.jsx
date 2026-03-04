@@ -140,6 +140,7 @@ function AdminDashboard() {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Roll No </th>
                 <th>Year</th>
                 <th>Event</th>
                 <th>Phone</th>
@@ -153,6 +154,7 @@ function AdminDashboard() {
                 <tr key={index}>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
+                  <td>{user.rollnumber}</td>
                   <td>{user.year}</td>
                   <td>{user.event}</td>
                   <td>{user.contactnumber}</td>
