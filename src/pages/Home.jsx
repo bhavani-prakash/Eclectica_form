@@ -1,6 +1,6 @@
 import React from 'react'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 // import phonepeQR from '../assets/phonepe-qr.png';
 
@@ -8,6 +8,7 @@ import '../index.css'
 
 const Home = () => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -35,6 +36,30 @@ const Home = () => {
     'Treasure Hunt',
     'Debate'
   ];
+
+  // Event fee mapping
+  const eventFees = {
+    'Paper Presentation': 150,
+    'Tech Quiz': 100,
+    'Project Expo': 200,
+    'Circuit Debugging': 120,
+    'Photography': 80,
+    'Gaming': 100,
+    'Treasure Hunt': 90,
+    'Debate': 70
+  };
+
+  // Handle URL parameters on component mount
+  useEffect(() => {
+    const eventParam = searchParams.get('event');
+    const typeParam = searchParams.get('type');
+    
+    if (eventParam && typeParam) {
+      setEvent(eventParam);
+      setEventType(typeParam);
+      setPaymentAmount(eventFees[eventParam] || 100);
+    }
+  }, [searchParams]);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -146,6 +171,19 @@ const Home = () => {
           <h2>Registration Form</h2>
           <p>Fill in your details and get ready for an unforgettable experience at Eclectic 2k26! 🚀</p>
         </div>
+
+        {/* Display selected event prominently */}
+        {event && (
+          <div className="selected-event-display">
+            <h3 className="event-selection">
+              📋 Selected Event: <span className="event-name">{event}</span>
+            </h3>
+            <p className="event-registration-fee">
+              Registration Fee: <span className="fee-amount">₹{paymentAmount}</span>
+            </p>
+          </div>
+        )}
+
         <p className="note-form"> If you face any issues during registration, please contact us Phone : +91 8125035960</p>
       </section>
 
@@ -246,6 +284,8 @@ const Home = () => {
               setEventType(e.target.value);
               setEvent(''); // reset event when type changes
             }}
+            disabled={event ? true : false}
+            style={event ? { backgroundColor: '#e0e0e0', cursor: 'not-allowed' } : {}}
           >
             <option value="">Select Event Type</option>
             <option value="technical">Technical</option>
@@ -258,7 +298,10 @@ const Home = () => {
               <select
                 required
                 value={event}
-                onChange={(e) => setEvent(e.target.value)}
+                onChange={(e) => {
+                  setEvent(e.target.value);
+                  setPaymentAmount(eventFees[e.target.value] || 100);
+                }}
               >
                 <option value="">Select Event</option>
 
@@ -285,6 +328,16 @@ const Home = () => {
           </button>
           
           <p>{loading ? "Please complete the payment to register. Do not refresh the page." : " "}</p>
+
+          <div className="form-footer">
+            <button 
+              type="button" 
+              className="back-btn"
+              onClick={() => navigate(event ? '/' : '/')}
+            >
+              ← Back to Events
+            </button>
+          </div>
         </form>
       </section>
     </div>

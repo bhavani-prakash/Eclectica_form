@@ -24,7 +24,7 @@ function AdminDashboard() {
 
     axios
       .get(
-        "https://eclecticabackend-production.up.railway.app/admin/dashboard")
+        "https://eclecticabackend-production-ffd4.up.railway.app/admin/dashboard")
       .then((res) => setData(res.data.data))
       .catch(() => {
         console.error("Error fetching dashboard:", err);
