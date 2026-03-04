@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+// Configure axios with timeout
+axios.defaults.timeout = 15000; // 15 second timeout
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const PermissionLetter = () => {
   const [rollnumber, setRollnumber] = useState('');
@@ -10,8 +14,27 @@ const PermissionLetter = () => {
   const [loading, setLoading] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: enter rollnumber, 2: select event
+  const [apiConnected, setApiConnected] = useState(null); // null: checking, true: connected, false: offline
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  // Check API connectivity on component mount
+  useEffect(() => {
+    const checkApiHealth = async () => {
+      try {
+        const testEndpoint = `${API_URL.replace(/\/$/, '')}/test`;
+        const response = await axios.get(testEndpoint, { timeout: 5000 });
+        console.log('API is reachable:', response.data);
+        setApiConnected(true);
+      } catch (err) {
+        console.error('API health check failed:', err.message);
+        setApiConnected(false);
+        setError(`⚠️ Cannot connect to API at ${API_URL}. The server may be down.`);
+      }
+    };
+    
+    checkApiHealth();
+  }, [API_URL]);
 
   const handleRollnumberSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +48,13 @@ const PermissionLetter = () => {
     setLoading(true);
     try {
       const endpoint = `${API_URL.replace(/\/$/, '')}/api/registered-events`;
+      console.log('API URL:', API_URL);
+      console.log('Full endpoint:', endpoint);
+      console.log('Payload:', { rollnumber });
+      
       const response = await axios.post(endpoint, { rollnumber });
+      console.log('Response received:', response.data);
+      
       if (response.data.success && response.data.events && response.data.events.length > 0) {
         setRegisteredEvents(response.data.events);
         setStep(2);
@@ -34,11 +63,31 @@ const PermissionLetter = () => {
       }
     } catch (err) {
       console.error('Registered events error:', err);
-      console.error('Response:', err.response?.data);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+      console.error('Error code:', err.code);
+      console.error('Error message:', err.message);
+      console.error('Response status:', err.response?.status);
+      console.error('Response data:', err.response?.data);
+      
+      if (err.code === 'ECONNABORTED') {
+        setError('Request timeout. Server took too long to respond. Please try again.');
+      } else if (err.message === 'Network Error') {
+        setError(`Network Error: Cannot connect to ${API_URL}. Check that the API URL is correct and the server is running.`);
+      } else if (err.response) {
+        // Server responded with an error
+        if (err.response.status === 404) {
+          setError(err.response.data.message || 'No registrations found for this roll number.');
+        } else if (err.response.status === 400) {
+          setError(err.response.data.message || 'Invalid roll number format.');
+        } else if (err.response.status === 500) {
+          setError('Server error. Please try again later.');
+        } else {
+          setError(err.response.data.message || `Server error: ${err.response.status}`);
+        }
+      } else if (err.request) {
+        // Request made but no response
+        setError(`Cannot reach server at ${API_URL}. Verify the domain is correct.`);
       } else {
-        setError('Network error. Please try again later.');
+        setError(err.message || 'An error occurred while connecting to the server.');
       }
     } finally {
       setLoading(false);
@@ -96,11 +145,16 @@ const PermissionLetter = () => {
       }
     } catch (err) {
       console.error('Permission letter PDF error:', err);
+      console.error('Error code:', err.code);
       console.error('Error status:', err.response?.status);
       console.error('Error data:', err.response?.data);
       console.error('Error message:', err.message);
       
-      if (err.response) {
+      if (err.code === 'ECONNABORTED') {
+        setError('Request timeout. Server took too long to respond. Please try again.');
+      } else if (err.message === 'Network Error') {
+        setError(`Network Error: Cannot connect to ${API_URL}. Check that the API URL is correct and the server is running.`);
+      } else if (err.response) {
         // Server responded with error status
         if (err.response.status === 404) {
           setError('No registration found for this roll number and event.');
@@ -120,9 +174,8 @@ const PermissionLetter = () => {
         }
       } else if (err.request) {
         // Request made but no response
-        setError('No response from server. Please check your connection.');
+        setError(`Cannot reach server at ${API_URL}. Verify the domain is correct.`);
       } else {
-        // Something else happened
         setError('Error: ' + (err.message || 'Unknown error'));
       }
     } finally {
@@ -142,6 +195,38 @@ const PermissionLetter = () => {
       minHeight: 350
     }}>
       <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Get Permission Letter</h2>
+      
+      {/* API Status Indicator */}
+      {apiConnected === false && (
+        <div style={{
+          background: '#ffebee',
+          border: '1px solid #e53935',
+          borderRadius: 6,
+          padding: 12,
+          marginBottom: 16,
+          textAlign: 'center',
+          color: '#b71c1c'
+        }}>
+          <strong>⚠️ API Offline</strong>
+          <p style={{ fontSize: 12, margin: '4px 0 0 0' }}>Backend server is not accessible. Please check the API URL or try again later.</p>
+        </div>
+      )}
+      
+      {apiConnected === true && (
+        <div style={{
+          background: '#e8f5e9',
+          border: '1px solid #4caf50',
+          borderRadius: 6,
+          padding: 10,
+          marginBottom: 16,
+          textAlign: 'center',
+          color: '#2e7d32',
+          fontSize: 12
+        }}>
+          ✅ API Connected
+        </div>
+      )}
+      
       {step === 1 && (
         <form onSubmit={handleRollnumberSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <label htmlFor="rollnumber" style={{ fontWeight: 500 }}>Roll Number</label>
