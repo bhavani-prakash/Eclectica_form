@@ -16,7 +16,7 @@ const PermissionLetter = () => {
   const [step, setStep] = useState(1); // 1: enter rollnumber, 2: select event
   const [apiConnected, setApiConnected] = useState(null); // null: checking, true: connected, false: offline
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = 'https://eclecticabackend-production-ffd4.up.railway.app' || 'http://localhost:5000';
 
   // Check API connectivity on component mount
   useEffect(() => {
