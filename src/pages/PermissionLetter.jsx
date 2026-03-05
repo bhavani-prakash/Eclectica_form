@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Footer from '../components/Footer';
+
 
 // Configure axios with timeout
 axios.defaults.timeout = 15000; // 15 second timeout
@@ -184,6 +186,21 @@ const PermissionLetter = () => {
   };
 
   return (
+    <div>
+      <div style={{
+        
+        padding: '40px 20px 20px 20px',
+        textAlign: 'center',
+        marginBottom: 40
+
+      }}>
+       <h1 className="fest-name">
+          <span className="big-letter">E</span>CLECTIC
+          <span className="big-letter">A</span>
+        </h1>
+        <div className="year">2k26</div>
+        </div>
+
     <div className="permission-letter-page" style={{
       maxWidth: 400,
       margin: '40px auto',
@@ -194,7 +211,7 @@ const PermissionLetter = () => {
       fontFamily: 'inherit',
       minHeight: 350
     }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Get Permission Letter</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: 24,color:'#252306'}}>Get Permission Letter</h2>
       
       {/* API Status Indicator */}
       {apiConnected === false && (
@@ -229,7 +246,7 @@ const PermissionLetter = () => {
       
       {step === 1 && (
         <form onSubmit={handleRollnumberSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <label htmlFor="rollnumber" style={{ fontWeight: 500 }}>Roll Number</label>
+          <label htmlFor="rollnumber" style={{ fontWeight: 500,color:'#131404' }}>Roll Number :</label>
           <input
             id="rollnumber"
             type="text"
@@ -260,7 +277,7 @@ const PermissionLetter = () => {
       )}
       {step === 2 && (
         <form onSubmit={handlePermissionSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <label htmlFor="event" style={{ fontWeight: 500 }}>Select Registered Event</label>
+          <label htmlFor="event" style={{ fontWeight: 500,color:'#131404' }}>Select Registered Event</label>
           <select
             id="event"
             value={event}
@@ -323,6 +340,7 @@ const PermissionLetter = () => {
       {letter && (
         <div className="letter-box" style={{
           marginTop: 24,
+          marginBottom:60,
           background: '#e8f5e9',
           borderRadius: 8,
           padding: 18,
@@ -334,6 +352,9 @@ const PermissionLetter = () => {
           <p style={{ fontSize: 12, color: '#666', marginTop: 12 }}>Your permission letter PDF has been generated with a QR code for verification.</p>
         </div>
       )}
+      
+    </div>
+    <Footer />
     </div>
   );
 };

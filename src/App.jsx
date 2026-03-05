@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import EventSelection from "./pages/EventSelection";
+
 import Home from "./pages/Home";
 import Tech from "./pages/Tech";
 import NonTech from "./pages/NonTech";
@@ -12,7 +12,7 @@ import PermissionLetter from "./pages/PermissionLetter";
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<EventSelection />} />
+      <Route path="/" element={<Home />} />
       <Route path="/register" element={<Home />} />
       <Route path="/tech" element={<Tech />} />
       <Route path="/nontech" element={<NonTech />} />

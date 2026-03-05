@@ -24,10 +24,11 @@ const Home = () => {
   const [paymentAmount, setPaymentAmount] = useState(100); // Payment amount in INR
 
   const technicalEvents = [
+    'Poster Presentation',
     'Paper Presentation',
     'Tech Quiz',
     'Project Expo',
-    'Circuit Debugging'
+    'Circuit Detective'
   ];
 
   const nonTechEvents = [
@@ -39,10 +40,11 @@ const Home = () => {
 
   // Event fee mapping
   const eventFees = {
-    'Paper Presentation': 150,
-    'Tech Quiz': 100,
-    'Project Expo': 200,
-    'Circuit Debugging': 120,
+    'Poster Presentation': 70,
+    'Paper Presentation': 70,
+    'Tech Quiz': 70,
+    'Project Expo': 70,
+    'Circuit Detective': 70,
     'Photography': 80,
     'Gaming': 100,
     'Treasure Hunt': 90,
@@ -330,13 +332,13 @@ const Home = () => {
           <p>{loading ? "Please complete the payment to register. Do not refresh the page." : " "}</p>
 
           <div className="form-footer">
-            <button 
+            {/* <button 
               type="button" 
               className="back-btn"
               onClick={() => navigate(event ? '/' : '/')}
             >
               ← Back to Events
-            </button>
+            </button> */}
           </div>
         </form>
       </section>

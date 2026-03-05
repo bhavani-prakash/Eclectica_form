@@ -6,10 +6,12 @@ const Tech = () => {
   const navigate = useNavigate()
 
   const technicalEvents = [
-    { name: 'Paper Presentation', fee: 150 },
-    { name: 'Tech Quiz', fee: 100 },
-    { name: 'Project Expo', fee: 200 },
-    { name: 'Circuit Debugging', fee: 120 }
+    { name: 'Tech Quiz', fee: 70 },
+    { name: 'Bug Hunters', fee: 70 },
+    { name: 'Circuit Detective', fee: 70 },
+    { name: 'Paper Presentation', fee: 70 },
+    { name: 'Poster Presentation', fee: 70 }
+    
   ];
 
   const handleRegister = (eventName, eventFee) => {
