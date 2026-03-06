@@ -32,10 +32,12 @@ const Home = () => {
   ];
 
   const nonTechEvents = [
-    'Photography',
-    'Gaming',
-    'Treasure Hunt',
-    'Debate'
+    'Free Fire',
+    'BGMI',
+    'Strength Storm',
+    'Balloon Sprint',
+    'Rope Rumble',
+    'Ball Heist'
   ];
 
   // Event fee mapping
@@ -45,10 +47,12 @@ const Home = () => {
     'Tech Quiz': 70,
     'Project Expo': 70,
     'Circuit Detective': 70,
-    'Photography': 80,
-    'Gaming': 100,
-    'Treasure Hunt': 90,
-    'Debate': 70
+    'Free Fire': 150,
+    'BGMI': 150,
+    'Strength Storm': 100,
+    'Balloon Sprint': 100,
+    'Rope Rumble': 100,
+    'Ball Heist': 100
   };
 
   // Handle URL parameters on component mount

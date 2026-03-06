@@ -1,15 +1,18 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../index.css'
+import Footer from '../components/Footer'
 
 const NonTech = () => {
   const navigate = useNavigate()
 
   const nonTechEvents = [
-    { name: 'Photography', fee: 80 },
-    { name: 'Gaming', fee: 100 },
-    { name: 'Treasure Hunt', fee: 90 },
-    { name: 'Debate', fee: 70 }
+    { name:  'Free fire', fee: 150 },
+    { name: 'BGMI ', fee: 150 },
+    { name: 'Strength Storm', fee: 100 },
+    { name: 'Balloon Sprit', fee: 100 },
+    { name: 'Rope Rumble', fee: 100 },
+    { name: 'Ball Heist', fee: 100 },
   ];
 
   const handleRegister = (eventName, eventFee) => {
@@ -18,6 +21,7 @@ const NonTech = () => {
 
   return (
     <div>
+      <div>
       <section className="hero">
         <h1 className="fest-name">
           <span className="big-letter">E</span>CLECTIC
@@ -47,6 +51,8 @@ const NonTech = () => {
           ))}
         </div>
       </section>
+      </div>
+      <Footer />
     </div>
   )
 }

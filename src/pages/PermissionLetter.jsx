@@ -54,7 +54,7 @@ const PermissionLetter = () => {
       console.log('Full endpoint:', endpoint);
       console.log('Payload:', { rollnumber });
       
-      const response = await axios.post(endpoint, { rollnumber });
+      const response = await axios.post(endpoint, { rollnumber: rollnumber.toLowerCase() });
       console.log('Response received:', response.data);
       
       if (response.data.success && response.data.events && response.data.events.length > 0) {
@@ -109,7 +109,7 @@ const PermissionLetter = () => {
       const endpoint = `${API_URL.replace(/\/$/, '')}/api/permission-letter-pdf`;
       console.log('Requesting PDF from:', endpoint);
       
-      const response = await axios.post(endpoint, { rollnumber, event }, { responseType: 'blob' });
+      const response = await axios.post(endpoint, { rollnumber: rollnumber.toLowerCase(), event }, { responseType: 'blob' });
       
       console.log('Response status:', response.status);
       console.log('Response headers:', response.headers);

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../index.css'
+import Footer from '../components/Footer'
 
 const Tech = () => {
   const navigate = useNavigate()
@@ -20,6 +21,7 @@ const Tech = () => {
 
   return (
     <div>
+        <div>
       <section className="hero">
         <h1 className="fest-name">
           <span className="big-letter">E</span>CLECTIC
@@ -49,6 +51,8 @@ const Tech = () => {
           ))}
         </div>
       </section>
+      </div>
+      <Footer />
     </div>
   )
 }
