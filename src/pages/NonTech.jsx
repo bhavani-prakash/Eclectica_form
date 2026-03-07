@@ -7,12 +7,12 @@ const NonTech = () => {
   const navigate = useNavigate()
 
   const nonTechEvents = [
-    { name:  'Free fire', fee: 150 },
-    { name: 'BGMI ', fee: 150 },
-    { name: 'Strength Storm', fee: 100 },
-    { name: 'Balloon Sprit', fee: 100 },
-    { name: 'Rope Rumble', fee: 100 },
-    { name: 'Ball Heist', fee: 100 },
+    { name:  'Free fire', fee: 200 },
+    { name: 'BGMI ', fee: 200 },
+    { name: 'Strength Storm', fee: 50 },
+    { name: 'Balloon Sprit', fee: 50 },
+    { name: 'Rope Rumble', fee: 50 },
+    { name: 'Ball Heist', fee: 50 },
   ];
 
   const handleRegister = (eventName, eventFee) => {

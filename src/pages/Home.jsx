@@ -47,12 +47,12 @@ const Home = () => {
     'Tech Quiz': 70,
     'Project Expo': 70,
     'Circuit Detective': 70,
-    'Free Fire': 150,
-    'BGMI': 150,
-    'Strength Storm': 100,
-    'Balloon Sprint': 100,
-    'Rope Rumble': 100,
-    'Ball Heist': 100
+    'Free Fire': 200,
+    'BGMI': 200,
+    'Strength Storm': 50,
+    'Balloon Sprint': 50,
+    'Rope Rumble': 50,
+    'Ball Heist': 50
   };
 
   // Handle URL parameters on component mount
@@ -175,7 +175,7 @@ const Home = () => {
         <div className="year">2k26</div>
         <div>
           <h2>Registration Form</h2>
-          <p>Fill in your details and get ready for an unforgettable experience at Eclectic 2k26! 🚀</p>
+          <p>Fill in your details and get ready for an unforgettable experience at Eclectica 2k26! 🚀</p>
         </div>
 
         {/* Display selected event prominently */}
