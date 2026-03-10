@@ -63,7 +63,7 @@ const Home = () => {
     if (eventParam && typeParam) {
       setEvent(eventParam);
       setEventType(typeParam);
-      setPaymentAmount(eventFees[eventParam] || 100);
+      setPaymentAmount(eventFees[eventParam] || 70);
     }
   }, [searchParams]);
 

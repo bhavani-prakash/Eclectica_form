@@ -22,6 +22,26 @@ const NonTech = () => {
   return (
     <div>
       <div>
+        <button 
+          className="back-btn"
+          onClick={() => window.location.href = 'https://eclectica2k26.netlify.app/'}
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            padding: '10px 20px',
+            background: '#e8c52b',
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: 14,
+            color: '#000',
+            zIndex: 10
+          }}
+        >
+          ← Back
+        </button>
       <section className="hero">
         <h1 className="fest-name">
           <span className="big-letter">E</span>CLECTIC
