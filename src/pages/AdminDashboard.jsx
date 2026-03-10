@@ -146,7 +146,7 @@ function AdminDashboard() {
                 <th>Phone</th>
                 <th>College</th>
                 <th>Registered At</th>
-                <th>Payment</th>
+                <th>Payment Status</th>
               </tr>
             </thead>
             <tbody>
@@ -160,14 +160,11 @@ function AdminDashboard() {
                   <td>{user.contactnumber}</td>
                   <td>{user.college}</td>
                   <td>{formatDate(user.createdAt)}</td>
-                  <td>{<a
-                    href={user.paymentScreenshot}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Screenshot
-                  </a>}</td>
-
+                  <td>
+                    <span className={`payment-badge payment-${(user.paymentStatus || 'completed').toLowerCase()}`}>
+                      {(user.paymentStatus || 'Completed').charAt(0).toUpperCase() + (user.paymentStatus || 'Completed').slice(1)}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

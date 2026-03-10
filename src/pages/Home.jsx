@@ -114,7 +114,6 @@ const Home = () => {
     if (!name || !email || !college || !rollnumber || !contactnumber || 
         !whatsappnumber || !year || !department || !event) {
       alert('Please fill in all fields');
-      setLoading(false);
       return;
     }
 
@@ -132,6 +131,7 @@ const Home = () => {
       order_id: orderId,
       handler: async (response) => {
         try {
+          setLoading(true);
           // Verify payment on backend
           const verifyEndpoint = `${API_URL.replace(/\/$/, '')}/api/verify-payment`;
           
@@ -151,14 +151,34 @@ const Home = () => {
           });
 
           if (verifyResponse.data.success) {
-            alert('Registration successful! Confirmation email sent.');
+            console.log('✅ Payment verified successfully');
+            // alert('Registration successful! Confirmation email sent.');
+            // Clear form
+            setName('');
+            setEmail('');
+            setCollege('');
+            setRollnumber('');
+            setContactnumber('');
+            setWhatsappnumber('');
+            setYear('');
+            setDepartment('');
+            setEvent('');
+            setEventType('');
+            setLoading(false);
             navigate('/greeting');
           }
         } catch (error) {
           console.error('Payment verification failed:', error);
           alert('Payment verification failed. Please contact support.');
-        } finally {
           setLoading(false);
+        }
+      },
+      modal: {
+        ondismiss: function() {
+          // User closed the payment modal without completing
+          console.log('❌ Payment modal closed by user');
+          setLoading(false);
+          alert('Payment cancelled. Your registration is incomplete.');
         }
       },
       prefill: {
@@ -219,7 +239,7 @@ const Home = () => {
           <input
             type="email"
             id="email"
-            placeholder="College Email Address  (eg:rollnumber@mits.ac.in) "
+            placeholder="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}

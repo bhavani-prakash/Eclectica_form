@@ -146,4 +146,30 @@ body {
   height: 200px;
 }
 
+/* Payment Status Badge Styling */
+.payment-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-completed {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.payment-pending {
+  background-color: #FFA500;
+  color: white;
+}
+
+.payment-failed {
+  background-color: #F44336;
+  color: white;
+}
+
 
