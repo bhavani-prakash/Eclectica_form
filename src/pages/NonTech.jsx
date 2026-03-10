@@ -9,7 +9,7 @@ const NonTech = () => {
   const nonTechEvents = [
     { name:  'Free fire', fee: 200 },
     { name: 'BGMI ', fee: 200 },
-    { name: 'Strength Storm', fee: 50 },
+    { name: 'cineQuest', fee: 50 },
     { name: 'Balloon Sprit', fee: 50 },
     { name: 'Rope Rumble', fee: 50 },
     { name: 'Ball Heist', fee: 50 },

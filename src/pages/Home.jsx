@@ -27,15 +27,15 @@ const Home = () => {
     'Poster Presentation',
     'Paper Presentation',
     'Tech Quiz',
-    'Project Expo',
+    'Bug Hunters',
     'Circuit Detective'
   ];
 
   const nonTechEvents = [
     'Free Fire',
     'BGMI',
-    'Strength Storm',
-    'Balloon Sprint',
+    'cineQuest',
+    'Balloon Spirit',
     'Rope Rumble',
     'Ball Heist'
   ];
@@ -45,12 +45,12 @@ const Home = () => {
     'Poster Presentation': 70,
     'Paper Presentation': 70,
     'Tech Quiz': 70,
-    'Project Expo': 70,
+    'Bug Hunters': 70,
     'Circuit Detective': 70,
     'Free Fire': 200,
     'BGMI': 200,
-    'Strength Storm': 50,
-    'Balloon Sprint': 50,
+    'cineQuest': 50,
+    'Balloon Spirit': 50,
     'Rope Rumble': 50,
     'Ball Heist': 50
   };
@@ -67,13 +67,16 @@ const Home = () => {
     }
   }, [searchParams]);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = 'https://eclecticabackend-production-ffd4.up.railway.app' || 'http://localhost:5000';
 
   // Function to create Razorpay order
   const createOrder = async () => {
     try {
       setLoading(true);
       const endpoint = `${API_URL.replace(/\/$/, '')}/api/create-order`;
+      
+      // Log request details
+      console.log('🔵 Creating order with:', { email, name, rollnumber, event, endpoint });
       
       const response = await axios.post(endpoint, {
         email,
@@ -82,6 +85,8 @@ const Home = () => {
         event
       });
 
+      console.log('✅ Order created successfully:', response.data);
+
       // Set payment amount from backend response
       if (response.data.eventFee) {
         setPaymentAmount(response.data.eventFee);
@@ -89,8 +94,13 @@ const Home = () => {
 
       return response.data.orderId;
     } catch (error) {
-      console.error('Error creating order:', error);
-      alert('Failed to create order. Please try again.');
+      console.error('❌ Error creating order:', error);
+      console.error('Response status:', error.response?.status);
+      console.error('Response data:', JSON.stringify(error.response?.data, null, 2));
+      console.error('Error message:', error.message);
+      
+      const errorMessage = error.response?.data?.message || error.response?.data?.details || error.message || 'Failed to create order. Please try again.';
+      alert(`Error: ${errorMessage}`);
       setLoading(false);
       return null;
     }
@@ -114,7 +124,7 @@ const Home = () => {
 
     // Prepare Razorpay options
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'YOUR_RAZORPAY_KEY_ID',
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SPTEm2Pm2fOJ1l',
       amount: paymentAmount * 100,
       currency: 'INR',
       name: 'ECLECTICA 2K26',

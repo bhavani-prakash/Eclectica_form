@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 
@@ -8,6 +9,7 @@ axios.defaults.timeout = 15000; // 15 second timeout
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const PermissionLetter = () => {
+  const navigate = useNavigate();
   const [rollnumber, setRollnumber] = useState('');
   const [event, setEvent] = useState('');
   const [registeredEvents, setRegisteredEvents] = useState([]);
@@ -188,18 +190,22 @@ const PermissionLetter = () => {
   return (
     <div>
       <div style={{
-        
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         padding: '40px 20px 20px 20px',
-        textAlign: 'center',
         marginBottom: 40
-
       }}>
-       <h1 className="fest-name">
-          <span className="big-letter">E</span>CLECTIC
-          <span className="big-letter">A</span>
-        </h1>
-        <div className="year">2k26</div>
+        <div style={{ flex: 1, textAlign: 'center'}}>
+          <h1 className="fest-name">
+            <span className="big-letter">E</span>CLECTIC
+            <span className="big-letter">A</span>
+          </h1>
+          <div className="year">2k26</div>
         </div>
+      
+       
+      </div>
 
     <div className="permission-letter-page" style={{
       maxWidth: 400,
@@ -273,7 +279,10 @@ const PermissionLetter = () => {
           >
             {loading ? 'Checking...' : 'Next'}
           </button>
+
+            
         </form>
+        
       )}
       {step === 2 && (
         <form onSubmit={handlePermissionSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
