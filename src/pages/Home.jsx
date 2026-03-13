@@ -529,9 +529,13 @@ const Home = () => {
               <a href="/terms-and-conditions" target="_blank" rel="noreferrer">
                 Terms & Conditions
               </a>
-              {' '}and{' '}
+              ,{' '}
               <a href="/privacy-policy" target="_blank" rel="noreferrer">
                 Privacy Policy
+              </a>
+              , and{' '}
+              <a href="/refund-policy" target="_blank" rel="noreferrer">
+                Refund Policy
               </a>
             </label>
           </div>

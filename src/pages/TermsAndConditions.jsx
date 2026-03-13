@@ -54,7 +54,8 @@ const TermsAndConditions = () => {
             • Only successful payments will be considered as valid registrations.<br/>
             • For gaming events (Free Fire, BGMI): Payment via UPI with screenshot upload is required.<br/>
             • For technical events: Online payment via Razorpay is required.<br/>
-            • All refunds are subject to review and must be requested before the event date.
+            • All refunds are subject to review and must be requested before the event date.<br/>
+            • Please refer to our <a href="/refund-policy" style={{ color: '#e8c52b', textDecoration: 'underline' }}>Refund Policy</a> for detailed refund terms and conditions.
           </p>
 
           <h3>3. Code of Conduct</h3>

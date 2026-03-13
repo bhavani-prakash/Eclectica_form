@@ -568,3 +568,82 @@ body {
 .tc-checkbox-container input[type="checkbox"]:invalid ~ label::after {
   content: '';
 }
+
+/* ================= FAQ STYLES ================= */
+.faq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.faq-item {
+  border: 2px solid rgba(232, 197, 43, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: rgba(26, 26, 26, 0.5);
+}
+
+.faq-item:hover {
+  border-color: #e8c52b;
+  box-shadow: 0 4px 12px rgba(232, 197, 43, 0.15);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 18px 20px;
+  background: rgba(42, 42, 42, 0.6);
+  border: none;
+  color: #e0e0e0;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+  background: rgba(60, 60, 60, 0.8);
+  color: #f4d03f;
+}
+
+.faq-question.expanded {
+  background: linear-gradient(135deg, rgba(232, 197, 43, 0.15), rgba(212, 175, 55, 0.1));
+  color: #f4d03f;
+  border-bottom: 2px solid #e8c52b;
+}
+
+.faq-toggle {
+  font-size: 1.5rem;
+  color: #e8c52b;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.faq-question.expanded .faq-toggle {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  padding: 20px;
+  background: rgba(20, 20, 20, 0.5);
+  color: #d0d0d0;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  border-top: 2px solid #e8c52b;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

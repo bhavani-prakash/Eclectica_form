@@ -118,6 +118,8 @@ const PrivacyPolicy = () => {
           <p>
             • Participant data will be retained for 2 years following the event for record-keeping and verification purposes.<br/>
             • Payment records are maintained as per financial compliance requirements.<br/>
+            • In case of refunds, refund-related data is retained for accounting and dispute resolution.<br/>
+            • For more information on refunds, please see our <a href="/refund-policy" style={{ color: '#e8c52b', textDecoration: 'underline' }}>Refund Policy</a>.<br/>
             • You may request data deletion at any time by contacting us.
           </p>
 
