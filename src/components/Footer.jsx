@@ -20,10 +20,12 @@ const Footer = () => {
           <div className="footer-links">
             <h3>Quick Links</h3>
             <ul>
-              <li><a href="#hero">Home</a></li>
-              <li><a href="#events">Events</a></li>
-              <li><a href="https://eclectica2k26-registration.netlify.app/">Register</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="/">Home</a></li>
+              <li><a href="https://eclectica2k26.netlify.app/#events">Events</a></li>
+              <li><a href="/register">Register</a></li>
+              <li><a href="/terms-and-conditions">Terms & Conditions</a></li>
+              <li><a href="/privacy-policy">Privacy Policy</a></li>
+              <li><a href="/refund-policy">Refund Policy</a></li>
             </ul>
           </div>
 
@@ -62,6 +64,19 @@ const Footer = () => {
 
       {/* Bottom */}
       <div className="footer-bottom">
+        <div style={{
+          textAlign: 'center',
+          fontSize: '11px',
+          color: '#999',
+          marginBottom: '15px',
+          padding: '15px',
+          borderTop: '1px solid #e8c52b'
+        }}>
+          <p>
+            <strong>📋 Disclaimer:</strong> This website and registration system was developed by students of the Department of Electronics and Communication Engineering, MITS Deemed to be University for ECLECTICA 2K26. The ECLECTICA logo and branding are not independently verified but are used as part of the departmental festival.
+          </p>
+        </div>
+
         <div className="developed-by">
           <p style={{ marginLeft: '-50px' }}>Developed by :</p>
           <div style={{ marginLeft: '30px' }}>
@@ -86,7 +101,7 @@ const Footer = () => {
             </a>
           </div>
         </div>
-        <p>© 2026 ECE Department Fest</p>
+        <p>© 2026 ECE Department Fest - MITS Deemed to be University</p>
       </div>
     </footer>
   );

@@ -12,7 +12,6 @@ const Tech = () => {
     { name: 'Circuit Detective', fee: 70 },
     { name: 'Paper Presentation', fee: 70 },
     { name: 'Poster Presentation', fee: 70 }
-    
   ];
 
   const handleRegister = (eventName, eventFee) => {

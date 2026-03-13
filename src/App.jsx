@@ -8,6 +8,9 @@ import Greeting from "./pages/Greeting";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
 import PermissionLetter from "./pages/PermissionLetter";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
 
 const App = () => {
   return (
@@ -20,6 +23,9 @@ const App = () => {
       <Route path="/admin-loginECE" element={<Admin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard/>} />
       <Route path="/permission-letter" element={<PermissionLetter />} />
+      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/refund-policy" element={<RefundPolicy />} />
     </Routes>
   );
 };

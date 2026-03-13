@@ -76,6 +76,7 @@ body {
 /* Table Styling */
 .table-container {
   overflow-x: auto;
+  margin-bottom: 20px;
 }
 
 .custom-table {
@@ -103,6 +104,67 @@ body {
 
 .custom-table tr:hover {
   background: #333;
+}
+
+/* Search Bar Section */
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+  padding: 15px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  background: #2a2a2a;
+  border: 2px solid #e8c52b;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.search-bar:focus {
+  outline: none;
+  background: #333;
+  border-color: #f0d760;
+  box-shadow: 0 0 8px rgba(232, 197, 43, 0.3);
+}
+
+.search-bar::placeholder {
+  color: #999;
+}
+
+.search-clear-btn {
+  padding: 10px 16px;
+  background: #ff6b6b;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 13px;
+}
+
+.search-clear-btn:hover {
+  background: #ff5252;
+}
+
+.search-results {
+  padding: 10px 16px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #e8c52b;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 /* Logout Button */
@@ -170,6 +232,97 @@ body {
 .payment-failed {
   background-color: #F44336;
   color: white;
+}
+
+/* Pagination Styling */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 30px 0;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  padding: 10px 20px;
+  background: #e8c52b;
+  border: none;
+  border-radius: 6px;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 14px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f0d760;
+  transform: translateY(-2px);
+}
+
+.pagination-btn:disabled {
+  background: #666;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pagination-info {
+  display: flex;
+  gap: 30px;
+  flex-direction: column;
+  text-align: center;
+  font-size: 14px;
+  color: #fff;
+}
+
+.pagination-info span {
+  display: block;
+}
+
+.pagination-info strong {
+  color: #e8c52b;
+  font-weight: bold;
+}
+
+/* No Results Message */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-results p {
+  font-size: 16px;
+  color: #bbb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-section {
+    flex-direction: column;
+  }
+
+  .search-bar {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .pagination-info {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
 
 

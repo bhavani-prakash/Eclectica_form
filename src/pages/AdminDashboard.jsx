@@ -8,6 +8,9 @@ function AdminDashboard() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
   const navigate = useNavigate();
 
   // ✅ Format Date
@@ -20,14 +23,12 @@ function AdminDashboard() {
 
   // ✅ Fetch Data
   useEffect(() => {
-
-
     axios
       .get(
         "https://eclecticabackend-production-ffd4.up.railway.app/admin/dashboard")
       .then((res) => setData(res.data.data))
-      .catch(() => {
-        console.error("Error fetching dashboard:", err);
+      .catch((error) => {
+        console.error("Error fetching dashboard:", error);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -41,11 +42,44 @@ function AdminDashboard() {
     return counts;
   }, [data]);
 
-  // ✅ Filtered Data
-  const filteredData =
-    selectedEvent === "All"
-      ? data
-      : data.filter((reg) => reg.event === selectedEvent);
+  // ✅ Filtered Data (by event and search query)
+  const filteredData = useMemo(() => {
+    let filtered =
+      selectedEvent === "All"
+        ? data
+        : data.filter((reg) => reg.event === selectedEvent);
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (reg) =>
+          reg.name.toLowerCase().includes(query) ||
+          reg.email.toLowerCase().includes(query) ||
+          reg.rollnumber.toLowerCase().includes(query) ||
+          reg.contactnumber.includes(query) ||
+          reg.college.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [data, selectedEvent, searchQuery]);
+
+  // ✅ Pagination Logic
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, endIndex);
+
+  // ✅ Reset to page 1 when search or event changes
+  const handleEventChange = (event) => {
+    setSelectedEvent(event);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
 
   // ✅ Download CSV
   const downloadCSV = () => {
@@ -102,7 +136,7 @@ function AdminDashboard() {
         <div className="card-container">
           <div
             className={`card ${selectedEvent === "All" ? "active" : ""}`}
-            onClick={() => setSelectedEvent("All")}
+            onClick={() => handleEventChange("All")}
           >
             <h4>All Events</h4>
             <p>{data.length}</p>
@@ -113,7 +147,7 @@ function AdminDashboard() {
               key={event}
               className={`card ${selectedEvent === event ? "active" : ""
                 }`}
-              onClick={() => setSelectedEvent(event)}
+              onClick={() => handleEventChange(event)}
             >
               <h4>{event}</h4>
               <p>{eventCounts[event]}</p>
@@ -126,6 +160,31 @@ function AdminDashboard() {
         <button className="download-btn" onClick={downloadCSV}>
           Download {selectedEvent} Data
         </button>
+      </div>
+
+      {/* 🔹 Search Bar */}
+      <div className="search-section">
+        <input
+          type="text"
+          className="search-bar"
+          placeholder="🔍 Search by Name, Email, Roll No, Phone, or College..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        {searchQuery && (
+          <button
+            className="search-clear-btn"
+            onClick={() => {
+              setSearchQuery("");
+              setCurrentPage(1);
+            }}
+          >
+            Clear
+          </button>
+        )}
+        <span className="search-results">
+          {filteredData.length} result{filteredData.length !== 1 ? "s" : ""} found
+        </span>
       </div>
 
       {/* 🔹 Loader or Table */}
@@ -150,7 +209,7 @@ function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((user, index) => (
+              {paginatedData.map((user, index) => (
                 <tr key={index}>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
@@ -172,15 +231,47 @@ function AdminDashboard() {
         </div>
       )}
 
+      {/* 🔹 Pagination Controls */}
+      {!loading && filteredData.length > 0 && (
+        <div className="pagination-container">
+          <button
+            className="pagination-btn"
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+          >
+            ← Previous
+          </button>
+
+          <div className="pagination-info">
+            <span>
+              Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+            </span>
+            <span>
+              Showing <strong>{startIndex + 1}</strong> to{" "}
+              <strong>{Math.min(endIndex, filteredData.length)}</strong> of{" "}
+              <strong>{filteredData.length}</strong>
+            </span>
+          </div>
+
+          <button
+            className="pagination-btn"
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next →
+          </button>
+        </div>
+      )}
+
+      {/* 🔹 No Results Message */}
+      {!loading && filteredData.length === 0 && (
+        <div className="no-results">
+          <p>No registrations found matching your search criteria.</p>
+        </div>
+      )}
+
       {/* 🔹 Logout */}
-      <button
-        className="logout-btn"
-        onClick={() => {
-          navigate("/");
-        }}
-      >
-        Logout
-      </button>
+      
     </div>
   );
 }

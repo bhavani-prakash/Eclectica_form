@@ -7,10 +7,10 @@ const NonTech = () => {
   const navigate = useNavigate()
 
   const nonTechEvents = [
-    { name:  'Free fire', fee: 200 },
-    { name: 'BGMI ', fee: 200 },
+    { name: 'Free Fire', fee: 200 },
+    { name: 'BGMI', fee: 200 },
     { name: 'cineQuest', fee: 50 },
-    { name: 'Balloon Sprit', fee: 50 },
+    { name: 'Balloon Spirit', fee: 50 },
     { name: 'Rope Rumble', fee: 50 },
     { name: 'Ball Heist', fee: 50 },
   ];

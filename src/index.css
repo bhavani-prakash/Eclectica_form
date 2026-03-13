@@ -438,3 +438,133 @@ body {
   border-color: #f4d03f;
   color: #f4d03f;
 }
+
+/* ================= POLICY PAGES STYLES ================= */
+.policy-section {
+  background: linear-gradient(135deg, rgba(26, 47, 79, 0.5), rgba(10, 22, 40, 0.5));
+  border-radius: 12px;
+  margin-bottom: 60px;
+}
+
+.policy-content {
+  line-height: 1.8;
+  color: #e0e0e0;
+}
+
+.policy-content h3 {
+  color: #f4d03f;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  border-left: 4px solid #d4af37;
+  padding-left: 15px;
+}
+
+.policy-content p {
+  margin-bottom: 15px;
+  text-align: justify;
+  font-size: 0.95rem;
+}
+
+.policy-content a {
+  color: #f4d03f;
+  text-decoration: none;
+  border-bottom: 1px dotted #d4af37;
+}
+
+.policy-content a:hover {
+  color: #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+/* ================= TERMS & CONDITIONS CHECKBOX ================= */
+.tc-checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 25px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(232, 197, 43, 0.08), rgba(212, 175, 55, 0.08));
+  border: 2px solid #e8c52b;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.tc-checkbox-container:hover {
+  background: linear-gradient(135deg, rgba(232, 197, 43, 0.12), rgba(212, 175, 55, 0.12));
+  border-color: #f4d03f;
+  box-shadow: 0 4px 15px rgba(232, 197, 43, 0.15);
+}
+
+.tc-checkbox-container input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  margin-top: 3px;
+  border: 2px solid #e8c52b;
+  border-radius: 6px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tc-checkbox-container input[type="checkbox"]:hover {
+  background-color: rgba(232, 197, 43, 0.1);
+  box-shadow: 0 0 8px rgba(232, 197, 43, 0.3);
+}
+
+.tc-checkbox-container input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, #e8c52b, #f4d03f);
+  border-color: #d4af37;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 8px rgba(232, 197, 43, 0.4);
+}
+
+.tc-checkbox-container input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0a1628;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.tc-checkbox-container label {
+  cursor: pointer;
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.tc-checkbox-container:hover label {
+  color: #f4d03f;
+}
+
+.tc-checkbox-container a {
+  color: #f4d03f;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  padding-bottom: 2px;
+}
+
+.tc-checkbox-container a:hover {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+  text-shadow: 0 0 8px rgba(232, 197, 43, 0.4);
+}
+
+/* Response message for unchecked checkbox */
+.tc-checkbox-container input[type="checkbox"]:invalid ~ label::after {
+  content: '';
+}

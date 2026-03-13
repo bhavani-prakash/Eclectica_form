@@ -12,14 +12,17 @@ const Admin = () => {
 
     const handleLogin = async () => {
     try {
+      setLoading(true);
       const res = await axios.post(
         'https://eclecticabackend-production-ffd4.up.railway.app/admin/login',
         { email, password }
       );
 
       localStorage.setItem('adminToken', res.data.token);
+      setLoading(false);
       navigate('/admin/dashboard');
     } catch (err) {
+      setLoading(false);
       alert('Invalid admin credentials');
     }
   };
