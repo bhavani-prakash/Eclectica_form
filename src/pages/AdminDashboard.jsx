@@ -160,13 +160,13 @@ function AdminDashboard() {
         <button className="download-btn" onClick={downloadCSV}>
           Download {selectedEvent} Data
         </button>
-        <button 
+        {/* <button 
           className="download-btn" 
           onClick={() => navigate('/admin/payment-stats')}
           style={{ backgroundColor: '#06D6A0', marginLeft: '10px' }}
         >
           💰 Payment Statistics
-        </button>
+        </button> */}
       </div>
 
       {/* 🔹 Search Bar */}

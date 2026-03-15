@@ -134,7 +134,7 @@ function PaymentStats() {
           🔄 Refresh Data
         </button>
         <button
-          onClick={() => navigate("/admin-dashboard")}
+          onClick={() => navigate("/admin/dashboard")}
           style={{
             padding: "12px 24px",
             fontSize: "16px",
