@@ -229,7 +229,7 @@ function AdminDashboard() {
                   <td>
                     {user.razorpay_signature ? (
                       <a 
-                        href={`https://eclecticabackend-production-ffd4.up.railway.app/uploads/${user.razorpay_signature}`}
+                        href={user.razorpay_signature}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{

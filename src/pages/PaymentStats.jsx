@@ -76,24 +76,6 @@ function PaymentStats() {
             {totals.totalRegistrations || 0}
           </p>
         </div>
-        <div style={cardStyle}>
-          <h3>Completed Payments</h3>
-          <p style={{ fontSize: "28px", color: "#06D6A0", fontWeight: "bold" }}>
-            {totals.completedPayments || 0}
-          </p>
-        </div>
-        <div style={cardStyle}>
-          <h3>Pending Payments</h3>
-          <p style={{ fontSize: "28px", color: "#FFA500", fontWeight: "bold" }}>
-            {totals.pendingPayments || 0}
-          </p>
-        </div>
-        <div style={cardStyle}>
-          <h3>Failed Payments</h3>
-          <p style={{ fontSize: "28px", color: "#EF476F", fontWeight: "bold" }}>
-            {totals.failedPayments || 0}
-          </p>
-        </div>
       </div>
 
       {/* Event-wise Breakdown */}
@@ -105,9 +87,6 @@ function PaymentStats() {
               <th>Event Name</th>
               <th>Registrations</th>
               <th>Total Amount</th>
-              <th>Completed</th>
-              <th>Pending</th>
-              <th>Failed</th>
             </tr>
           </thead>
           <tbody>
@@ -119,14 +98,11 @@ function PaymentStats() {
                   <td style={{ ...cellStyle, color: "#06D6A0", fontWeight: "bold" }}>
                     ₹{event.totalAmount?.toLocaleString() || 0}
                   </td>
-                  <td style={{ ...cellStyle, color: "#06D6A0" }}>{event.completedPayments}</td>
-                  <td style={{ ...cellStyle, color: "#FFA500" }}>{event.pendingPayments}</td>
-                  <td style={{ ...cellStyle, color: "#EF476F" }}>{event.failedPayments}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" style={{ ...cellStyle, textAlign: "center", padding: "20px" }}>
+                <td colSpan="3" style={{ ...cellStyle, textAlign: "center", padding: "20px" }}>
                   No payment data available
                 </td>
               </tr>
