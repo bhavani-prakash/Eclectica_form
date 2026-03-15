@@ -1,0 +1,215 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import PacmanLoader from "react-spinners/PacmanLoader";
+
+function PaymentStats() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [paymentData, setPaymentData] = useState(null);
+  const navigate = useNavigate();
+
+  const API_URL = "https://eclecticabackend-production-ffd4.up.railway.app";
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    fetchPaymentStats(token);
+  }, []);
+
+  const fetchPaymentStats = (token) => {
+    axios
+      .get(`${API_URL}/admin/payment-stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then((res) => {
+        setPaymentData(res.data.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching payment stats:", error);
+        if (error.response?.status === 401) {
+          setError("Unauthorized. Please login to view payment statistics.");
+        } else {
+          setError("Failed to load payment statistics");
+        }
+        setLoading(false);
+      });
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", padding: "50px" }}>
+        <PacmanLoader color="#36d7b7" size={30} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "20px", textAlign: "center", color: "red" }}>
+        <h3>{error}</h3>
+        <button onClick={() => navigate("/admin-dashboard")}>
+          Back to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  const totals = paymentData?.totals || {};
+  const byEvent = paymentData?.byEvent || [];
+
+  return (
+    <div style={{ padding: "30px", maxWidth: "1200px", margin: "0 auto" }}>
+      <h1>💰 Payment Statistics</h1>
+
+      {/* Total Summary Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", marginBottom: "40px" }}>
+        <div style={cardStyle}>
+          <h3>Total Amount</h3>
+          <p style={{ fontSize: "28px", color: "#06D6A0", fontWeight: "bold" }}>
+            ₹{totals.totalAmount?.toLocaleString() || 0}
+          </p>
+        </div>
+        <div style={cardStyle}>
+          <h3>Total Registrations</h3>
+          <p style={{ fontSize: "28px", color: "#118ab2", fontWeight: "bold" }}>
+            {totals.totalRegistrations || 0}
+          </p>
+        </div>
+        <div style={cardStyle}>
+          <h3>Completed Payments</h3>
+          <p style={{ fontSize: "28px", color: "#06D6A0", fontWeight: "bold" }}>
+            {totals.completedPayments || 0}
+          </p>
+        </div>
+        <div style={cardStyle}>
+          <h3>Pending Payments</h3>
+          <p style={{ fontSize: "28px", color: "#FFA500", fontWeight: "bold" }}>
+            {totals.pendingPayments || 0}
+          </p>
+        </div>
+        <div style={cardStyle}>
+          <h3>Failed Payments</h3>
+          <p style={{ fontSize: "28px", color: "#EF476F", fontWeight: "bold" }}>
+            {totals.failedPayments || 0}
+          </p>
+        </div>
+      </div>
+
+      {/* Event-wise Breakdown */}
+      <h2>Event-wise Breakdown</h2>
+      <div style={{ overflowX: "auto" }}>
+        <table style={tableStyle}>
+          <thead>
+            <tr style={headerStyle}>
+              <th>Event Name</th>
+              <th>Registrations</th>
+              <th>Total Amount</th>
+              <th>Completed</th>
+              <th>Pending</th>
+              <th>Failed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {byEvent.length > 0 ? (
+              byEvent.map((event, idx) => (
+                <tr key={idx} style={idx % 2 === 0 ? rowStyle : rowAltStyle}>
+                  <td style={cellStyle}>{event._id}</td>
+                  <td style={cellStyle}>{event.totalRegistrations}</td>
+                  <td style={{ ...cellStyle, color: "#06D6A0", fontWeight: "bold" }}>
+                    ₹{event.totalAmount?.toLocaleString() || 0}
+                  </td>
+                  <td style={{ ...cellStyle, color: "#06D6A0" }}>{event.completedPayments}</td>
+                  <td style={{ ...cellStyle, color: "#FFA500" }}>{event.pendingPayments}</td>
+                  <td style={{ ...cellStyle, color: "#EF476F" }}>{event.failedPayments}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ ...cellStyle, textAlign: "center", padding: "20px" }}>
+                  No payment data available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Refresh Button */}
+      <div style={{ marginTop: "30px", textAlign: "center" }}>
+        <button
+          onClick={() => {
+            setLoading(true);
+            const token = localStorage.getItem("adminToken");
+            fetchPaymentStats(token);
+          }}
+          style={{
+            padding: "12px 24px",
+            fontSize: "16px",
+            backgroundColor: "#06D6A0",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            marginRight: "10px"
+          }}
+        >
+          🔄 Refresh Data
+        </button>
+        <button
+          onClick={() => navigate("/admin-dashboard")}
+          style={{
+            padding: "12px 24px",
+            fontSize: "16px",
+            backgroundColor: "#118ab2",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer"
+          }}
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Styles
+const cardStyle = {
+  backgroundColor: "#f8f9fa",
+  padding: "20px",
+  borderRadius: "10px",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  textAlign: "center"
+};
+
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+  marginTop: "20px",
+  backgroundColor: "white",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+};
+
+const headerStyle = {
+  backgroundColor: "#118ab2",
+  color: "white",
+  fontWeight: "bold"
+};
+
+const rowStyle = {
+  backgroundColor: "#f8f9fa"
+};
+
+const rowAltStyle = {
+  backgroundColor: "white"
+};
+
+const cellStyle = {
+  padding: "15px",
+  borderBottom: "1px solid #ddd",
+  textAlign: "center"
+};
+
+export default PaymentStats;

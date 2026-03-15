@@ -7,6 +7,7 @@ import NonTech from "./pages/NonTech";
 import Greeting from "./pages/Greeting";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
+import PaymentStats from "./pages/PaymentStats";
 import PermissionLetter from "./pages/PermissionLetter";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -20,8 +21,9 @@ const App = () => {
       <Route path="/tech" element={<Tech />} />
       <Route path="/nontech" element={<NonTech />} />
       <Route path="/greeting" element={<Greeting />} />
-      <Route path="/admin-loginECE" element={<Admin />} />
+      <Route path="/admin" element={<Admin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+      <Route path="/admin/payment-stats" element={<PaymentStats/>} />
       <Route path="/permission-letter" element={<PermissionLetter />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />

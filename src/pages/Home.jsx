@@ -23,7 +23,6 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(100);
   const [screenshotFile, setScreenshotFile] = useState(null);
-  const [acceptedTC, setAcceptedTC] = useState(false);
 
   const technicalEvents = [
     'Poster Presentation',
@@ -67,180 +66,18 @@ const Home = () => {
       setEventType(typeParam);
       setPaymentAmount(eventFees[eventParam] || 70);
     }
-
-    // Ensure Razorpay script is loaded
-    if (!window.Razorpay) {
-      console.warn('Razorpay script not loaded, loading now...');
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
   }, [searchParams]);
 
   const API_URL = 'https://eclecticabackend-production-ffd4.up.railway.app' || 'http://localhost:5000';
 
-  // Check if event requires manual payment
-  const isManualPaymentEvent = (eventName) => {
-    return eventName === 'Free Fire' || eventName === 'BGMI';
-  };
-
-  // UPI ID for manual payment (You can change this)
-  const UPI_ID = 'your-upi-id@bank'; // Update with actual UPI ID
-  const upiString = `upi://pay?pa=${UPI_ID}&pn=ECLECTICA&am=${paymentAmount}&tn=RegFee`;
-
-  // Function to create Razorpay order
-  const createOrder = async () => {
-    try {
-      setLoading(true);
-      const endpoint = `${API_URL.replace(/\/$/, '')}/api/create-order`;
-      
-      // Log request details
-      console.log('🔵 Creating order with:', { email, name, rollnumber, event, endpoint });
-      
-      const response = await axios.post(endpoint, {
-        email,
-        name,
-        rollnumber,
-        event
-      });
-
-      console.log('✅ Order created successfully:', response.data);
-
-      // Set payment amount from backend response
-      if (response.data.eventFee) {
-        setPaymentAmount(response.data.eventFee);
-      }
-
-      return response.data.orderId;
-    } catch (error) {
-      console.error('❌ Error creating order:', error);
-      console.error('Response status:', error.response?.status);
-      console.error('Response data:', JSON.stringify(error.response?.data, null, 2));
-      console.error('Error message:', error.message);
-      
-      const errorMessage = error.response?.data?.message || error.response?.data?.details || error.message || 'Failed to create order. Please try again.';
-      alert(`Error: ${errorMessage}`);
-      setLoading(false);
-      return null;
-    }
-  };
-
-  // Function to handle Razorpay payment
+  // Handle payment submission (for all events - manual payment with screenshot)
   const handlePayment = async (e) => {
-    e.preventDefault();
-
-    // Check if Razorpay script is loaded
-    if (!window.Razorpay) {
-      alert('Payment gateway is loading. Please wait a moment and try again.');
-      console.error('Razorpay script not loaded');
-      return;
-    }
-
-    // Validate form
-    if (!name || !email || !college || !rollnumber || !contactnumber || 
-        !whatsappnumber || !year || !department || !event) {
-      alert('Please fill in all fields');
-      return;
-    }
-
-    // Create order
-    const orderId = await createOrder();
-    if (!orderId) return;
-
-    // Prepare Razorpay options
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SPTEm2Pm2fOJ1l',
-      amount: paymentAmount * 100,
-      currency: 'INR',
-      name: 'ECLECTICA 2K26',
-      description: event,
-      order_id: orderId,
-      handler: async (response) => {
-        try {
-          setLoading(true);
-          // Verify payment on backend
-          const verifyEndpoint = `${API_URL.replace(/\/$/, '')}/api/verify-payment`;
-          
-          const verifyResponse = await axios.post(verifyEndpoint, {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            name,
-            email,
-            college,
-            rollnumber,
-            contactnumber,
-            whatsappnumber,
-            year,
-            department,
-            event
-          });
-
-          if (verifyResponse.data.success) {
-            console.log('✅ Payment verified successfully');
-            // alert('Registration successful! Confirmation email sent.');
-            // Clear form
-            setName('');
-            setEmail('');
-            setCollege('');
-            setRollnumber('');
-            setContactnumber('');
-            setWhatsappnumber('');
-            setYear('');
-            setDepartment('');
-            setEvent('');
-            setEventType('');
-            setLoading(false);
-            navigate('/greeting');
-          }
-        } catch (error) {
-          console.error('Payment verification failed:', error);
-          alert('Payment verification failed. Please contact support.');
-          setLoading(false);
-        }
-      },
-      modal: {
-        ondismiss: function() {
-          // User closed the payment modal without completing
-          console.log('❌ Payment modal closed by user');
-          setLoading(false);
-          alert('Payment cancelled. Your registration is incomplete.');
-        }
-      },
-      prefill: {
-        name: name,
-        email: email,
-        contact: contactnumber
-      },
-      theme: {
-        color: '#3399cc'
-      }
-    };
-
-    try {
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error('Razorpay initialization error:', error);
-      alert('Failed to open payment gateway. Please try again.');
-      setLoading(false);
-    }
-  };
-
-  // Handle manual payment submission (for Free Fire & BGMI)
-  const handleManualPayment = async (e) => {
     e.preventDefault();
 
     // Validate all fields
     if (!name || !email || !college || !rollnumber || !contactnumber || 
         !whatsappnumber || !year || !department || !event) {
       alert('Please fill in all fields');
-      return;
-    }
-
-    if (!acceptedTC) {
-      alert('Please accept Terms & Conditions');
       return;
     }
 
@@ -252,8 +89,7 @@ const Home = () => {
     try {
       setLoading(true);
 
-      // For manual payment, we store the registration data without payment verification
-      // Admin will verify the screenshot later
+      // Store registration with screenshot
       const endpoint = `${API_URL.replace(/\/$/, '')}/api/manual-registration`;
 
       const formData = new FormData();
@@ -267,14 +103,15 @@ const Home = () => {
       formData.append('department', department);
       formData.append('event', event);
       formData.append('screenshot', screenshotFile);
-      formData.append('paymentStatus', 'pending');
+      formData.append('paymentStatus', 'success');
+      formData.append('paymentAmount', paymentAmount);
 
       const response = await axios.post(endpoint, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       if (response.data.success) {
-        alert('Registration submitted! Payment verification pending. You will receive confirmation email once verified.');
+        alert('Registration Successful! 🎉\n\nYour registration has been submitted successfully. Thank you for registering!');
         setName('');
         setEmail('');
         setCollege('');
@@ -286,12 +123,11 @@ const Home = () => {
         setEvent('');
         setEventType('');
         setScreenshotFile(null);
-        setAcceptedTC(false);
         setLoading(false);
         navigate('/greeting');
       }
     } catch (error) {
-      console.error('Manual payment error:', error);
+      console.error('Registration error:', error);
       alert('Error submitting registration. Please try again.');
       setLoading(false);
     }
@@ -326,7 +162,7 @@ const Home = () => {
       </section>
 
       <section className="form">
-        <form className="registration-form" onSubmit={isManualPaymentEvent(event) ? handleManualPayment : handlePayment}>
+        <form className="registration-form" onSubmit={handlePayment}>
           <label>Full Name</label>
           <input
             type="text"
@@ -458,90 +294,55 @@ const Home = () => {
           <div className="payment-section">
             <h3>Payment</h3>
             <p>Registration Fee: ₹{paymentAmount}</p>
-            {isManualPaymentEvent(event) ? (
-              <>
-                <p style={{ marginTop: '15px', color: '#e8c52b', fontWeight: 'bold' }}>
-                  📱 Pay via UPI & Upload Screenshot
-                </p>
-                <p style={{ fontSize: '12px', marginTop: '10px' }}>
-                  Scan the QR code or use UPI ID below to make payment
-                </p>
-                
-                {/* QR Code Display - You can replace this with actual QR image */}
-                <div style={{
-                  background: '#fff',
-                  padding: '15px',
-                  borderRadius: '8px',
-                  marginTop: '15px',
-                  textAlign: 'center'
-                }}>
-                  <div style={{
-                    width: '150px',
-                    height: '150px',
-                    background: '#ddd',
-                    margin: '0 auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '6px',
-                    color: '#333'
-                  }}>
-                    {/* Replace with actual QR code image */}
-                    <span>QR Code Here</span>
-                  </div>
-                  <p style={{ marginTop: '10px', color: '#333', fontWeight: 'bold' }}>
-                    UPI: {UPI_ID}
-                  </p>
-                </div>
+            <p style={{ marginTop: '15px', color: '#e8c52b', fontWeight: 'bold' }}>
+              📱 Pay via UPI/Bank Transfer & Upload Screenshot
+            </p>
+            <p style={{ fontSize: '12px', marginTop: '10px' }}>
+              Make payment and upload proof of payment to complete registration
+            </p>
 
-                <label style={{ marginTop: '20px' }}>Upload Payment Screenshot</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  required
-                  onChange={(e) => setScreenshotFile(e.target.files?.[0] || null)}
-                  style={{
-                    padding: '10px',
-                    borderRadius: '6px',
-                    border: '2px solid #e8c52b',
-                    width: '100%'
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                <p>Click the button below to complete payment via Razorpay</p>
-              </>
-            )}
-          </div>
+            {/* QR Code Display */}
+            <div style={{
+              background: '#fff',
+              padding: '15px',
+              borderRadius: '8px',
+              marginTop: '15px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                width: '200px',
+                height: '200px',
+                background: '#ddd',
+                margin: '0 auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '6px',
+                color: '#333',
+                fontSize: '14px'
+              }}>
+                {/* Replace with actual QR code image */}
+                <span>📲 QR Code Here</span>
+              </div>
+            </div>
 
-          {/* Terms & Conditions Checkbox */}
-          <div className="tc-checkbox-container">
+            <label style={{ marginTop: '20px' }}>Upload Payment Screenshot</label>
             <input
-              type="checkbox"
-              id="tc-check"
-              checked={acceptedTC}
-              onChange={(e) => setAcceptedTC(e.target.checked)}
+              type="file"
+              accept="image/*"
               required
+              onChange={(e) => setScreenshotFile(e.target.files?.[0] || null)}
+              style={{
+                padding: '10px',
+                borderRadius: '6px',
+                border: '2px solid #e8c52b',
+                width: '100%'
+              }}
             />
-            <label htmlFor="tc-check">
-              I have read and agree to the{' '}
-              <a href="/terms-and-conditions" target="_blank" rel="noreferrer">
-                Terms & Conditions
-              </a>
-              ,{' '}
-              <a href="/privacy-policy" target="_blank" rel="noreferrer">
-                Privacy Policy
-              </a>
-              , and{' '}
-              <a href="/refund-policy" target="_blank" rel="noreferrer">
-                Refund Policy
-              </a>
-            </label>
           </div>
 
-          <button type="submit" disabled={loading || !acceptedTC}>
-            {loading ? "Processing..." : isManualPaymentEvent(event) ? `Submit Registration (₹${paymentAmount})` : `Pay ₹${paymentAmount} & Register`}
+          <button type="submit" disabled={loading}>
+            {loading ? "Processing..." : `Submit Registration (₹${paymentAmount})`}
           </button>
           
           <p>{loading ? "Please complete the payment to register. Do not refresh the page." : " "}</p>

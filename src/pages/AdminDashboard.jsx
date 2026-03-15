@@ -160,6 +160,13 @@ function AdminDashboard() {
         <button className="download-btn" onClick={downloadCSV}>
           Download {selectedEvent} Data
         </button>
+        <button 
+          className="download-btn" 
+          onClick={() => navigate('/admin/payment-stats')}
+          style={{ backgroundColor: '#06D6A0', marginLeft: '10px' }}
+        >
+          💰 Payment Statistics
+        </button>
       </div>
 
       {/* 🔹 Search Bar */}
@@ -205,7 +212,7 @@ function AdminDashboard() {
                 <th>Phone</th>
                 <th>College</th>
                 <th>Registered At</th>
-                <th>Payment Status</th>
+                <th>Payment Screenshot</th>
               </tr>
             </thead>
             <tbody>
@@ -220,9 +227,23 @@ function AdminDashboard() {
                   <td>{user.college}</td>
                   <td>{formatDate(user.createdAt)}</td>
                   <td>
-                    <span className={`payment-badge payment-${(user.paymentStatus || 'completed').toLowerCase()}`}>
-                      {(user.paymentStatus || 'Completed').charAt(0).toUpperCase() + (user.paymentStatus || 'Completed').slice(1)}
-                    </span>
+                    {user.razorpay_signature ? (
+                      <a 
+                        href={`https://eclecticabackend-production-ffd4.up.railway.app/uploads/${user.razorpay_signature}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: '#06D6A0',
+                          textDecoration: 'none',
+                          fontWeight: 'bold',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        📸 View Screenshot
+                      </a>
+                    ) : (
+                      <span style={{ color: '#999' }}>No screenshot</span>
+                    )}
                   </td>
                 </tr>
               ))}
