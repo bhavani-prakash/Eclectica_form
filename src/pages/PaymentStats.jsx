@@ -46,9 +46,9 @@ function PaymentStats() {
 
   if (error) {
     return (
-      <div style={{ padding: "20px", textAlign: "center", color: "red" }}>
-        <h3>{error}</h3>
-        <button onClick={() => navigate("/admin-dashboard")}>
+      <div style={{ padding: "20px", textAlign: "center", color: "red", backgroundColor: "#fff5f5", minHeight: "100vh" }}>
+        <h3 style={{ color: "#d32f2f" }}>{error}</h3>
+        <button onClick={() => navigate("/admin-dashboard")} style={{ padding: "10px 20px", backgroundColor: "#118ab2", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
           Back to Dashboard
         </button>
       </div>
@@ -59,19 +59,20 @@ function PaymentStats() {
   const byEvent = paymentData?.byEvent || [];
 
   return (
-    <div style={{ padding: "30px", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1>💰 Payment Statistics</h1>
+    <div style={{ padding: "30px", maxWidth: "1200px", margin: "0 auto", backgroundColor: "#ffffff", minHeight: "100vh" }}>
+      <h1 style={{ color: "#118ab2", marginBottom: "10px", fontSize: "32px", fontWeight: "bold" }}>💰 Payment Statistics</h1>
+      <hr style={{ borderColor: "#06D6A0", marginBottom: "30px" }} />
 
       {/* Total Summary Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", marginBottom: "40px" }}>
         <div style={cardStyle}>
-          <h3>Total Amount</h3>
+          <h3 style={cardHeadingStyle}>Total Amount</h3>
           <p style={{ fontSize: "28px", color: "#06D6A0", fontWeight: "bold" }}>
             ₹{totals.totalAmount?.toLocaleString() || 0}
           </p>
         </div>
         <div style={cardStyle}>
-          <h3>Total Registrations</h3>
+          <h3 style={cardHeadingStyle}>Total Registrations</h3>
           <p style={{ fontSize: "28px", color: "#118ab2", fontWeight: "bold" }}>
             {totals.totalRegistrations || 0}
           </p>
@@ -79,7 +80,7 @@ function PaymentStats() {
       </div>
 
       {/* Event-wise Breakdown */}
-      <h2>Event-wise Breakdown</h2>
+      <h2 style={{ color: "#118ab2", marginTop: "40px", marginBottom: "20px", fontSize: "24px", fontWeight: "bold" }}>Event-wise Breakdown</h2>
       <div style={{ overflowX: "auto" }}>
         <table style={tableStyle}>
           <thead>
@@ -157,7 +158,15 @@ const cardStyle = {
   padding: "20px",
   borderRadius: "10px",
   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  textAlign: "center"
+  textAlign: "center",
+  border: "2px solid #06D6A0"
+};
+
+const cardHeadingStyle = {
+  color: "#118ab2",
+  fontSize: "16px",
+  fontWeight: "bold",
+  marginBottom: "10px"
 };
 
 const tableStyle = {
@@ -165,13 +174,16 @@ const tableStyle = {
   borderCollapse: "collapse",
   marginTop: "20px",
   backgroundColor: "white",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  border: "2px solid #06D6A0"
 };
 
 const headerStyle = {
   backgroundColor: "#118ab2",
   color: "white",
-  fontWeight: "bold"
+  fontWeight: "bold",
+  padding: "15px",
+  fontSize: "14px"
 };
 
 const rowStyle = {
@@ -179,13 +191,15 @@ const rowStyle = {
 };
 
 const rowAltStyle = {
-  backgroundColor: "white"
+  backgroundColor: "#ffffff"
 };
 
 const cellStyle = {
   padding: "15px",
   borderBottom: "1px solid #ddd",
-  textAlign: "center"
+  textAlign: "center",
+  color: "#333",
+  fontWeight: "500"
 };
 
 export default PaymentStats;
