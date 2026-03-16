@@ -10,8 +10,22 @@ function AdminDashboard() {
   const [selectedEvent, setSelectedEvent] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const itemsPerPage = 50;
   const navigate = useNavigate();
+
+  // ✅ Open Image Modal
+  const openImageModal = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setShowModal(true);
+  };
+
+  // ✅ Close Image Modal
+  const closeImageModal = () => {
+    setShowModal(false);
+    setSelectedImage(null);
+  };
 
   // ✅ Format Date
   const formatDate = (createdAt) => {
@@ -96,6 +110,7 @@ function AdminDashboard() {
       "Phone",
       "College",
       "Registered At",
+      "UTR Number",
     ];
 
     const rows = filteredData.map((user) => [
@@ -106,6 +121,7 @@ function AdminDashboard() {
       user.contactnumber,
       user.college,
       formatDate(user.createdAt),
+      user.utrNumber || "-",
     ]);
 
     const csvContent = [headers, ...rows]
@@ -213,6 +229,7 @@ function AdminDashboard() {
                 <th>College</th>
                 <th>Registered At</th>
                 <th>Payment Screenshot</th>
+                <th>UTR Number</th>
               </tr>
             </thead>
             <tbody>
@@ -227,22 +244,31 @@ function AdminDashboard() {
                   <td>{user.college}</td>
                   <td>{formatDate(user.createdAt)}</td>
                   <td>
-                    {user.razorpay_signature ? (
-                      <a 
-                        href={user.razorpay_signature}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {user.imageUrl || user.razorpay_signature ? (
+                      <button 
+                        onClick={() => openImageModal(user.imageUrl || user.razorpay_signature)}
                         style={{
-                          color: '#06D6A0',
-                          textDecoration: 'none',
+                          backgroundColor: '#06D6A0',
+                          color: '#000',
+                          border: 'none',
+                          padding: '8px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
                           fontWeight: 'bold',
-                          cursor: 'pointer'
+                          fontSize: '14px'
                         }}
                       >
                         📸 View Screenshot
-                      </a>
+                      </button>
                     ) : (
                       <span style={{ color: '#999' }}>No screenshot</span>
+                    )}
+                  </td>
+                  <td>
+                    {user.utrNumber ? (
+                      <span style={{ fontWeight: 'bold', color: '#06D6A0' }}>{user.utrNumber}</span>
+                    ) : (
+                      <span style={{ color: '#999' }}>-</span>
                     )}
                   </td>
                 </tr>
@@ -288,6 +314,71 @@ function AdminDashboard() {
       {!loading && filteredData.length === 0 && (
         <div className="no-results">
           <p>No registrations found matching your search criteria.</p>
+        </div>
+      )}
+
+      {/* 🔹 Image Modal */}
+      {showModal && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}
+          onClick={closeImageModal}
+        >
+          <div 
+            style={{
+              backgroundColor: 'white',
+              padding: '20px',
+              borderRadius: '8px',
+              maxWidth: '80%',
+              maxHeight: '80%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeImageModal}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                backgroundColor: '#ff4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                fontSize: '18px',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              ✕
+            </button>
+            <img 
+              src={selectedImage} 
+              alt="Payment Screenshot" 
+              style={{
+                maxWidth: '100%',
+                maxHeight: '70vh',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
         </div>
       )}
 

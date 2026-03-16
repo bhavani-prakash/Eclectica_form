@@ -23,6 +23,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(100);
   const [screenshotFile, setScreenshotFile] = useState(null);
+  const [utrNumber, setUtrNumber] = useState('');
 
   const technicalEvents = [
     'Poster Presentation',
@@ -86,6 +87,12 @@ const Home = () => {
       return;
     }
 
+    if (!utrNumber || utrNumber.trim() === '') {
+      alert('Please enter UTR number');
+      console.warn('UTR validation failed. UTR value:', utrNumber);
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -105,6 +112,9 @@ const Home = () => {
       formData.append('screenshot', screenshotFile);
       formData.append('paymentStatus', 'success');
       formData.append('paymentAmount', paymentAmount);
+      formData.append('utrNumber', utrNumber);
+
+      console.log('📤 Sending registration with UTR:', utrNumber);
 
       const response = await axios.post(endpoint, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -123,6 +133,7 @@ const Home = () => {
         setEvent('');
         setEventType('');
         setScreenshotFile(null);
+        setUtrNumber('');
         setLoading(false);
         navigate('/greeting');
       }
@@ -339,6 +350,27 @@ const Home = () => {
                 width: '100%'
               }}
             />
+
+            <label style={{ marginTop: '15px' }}>UTR Number <span style={{ color: 'red' }}>*</span></label>
+            <input
+              type="text"
+              placeholder="Enter UTR/Reference Number"
+              required
+              value={utrNumber}
+              onChange={(e) => {
+                console.log('UTR input changed:', e.target.value);
+                setUtrNumber(e.target.value);
+              }}
+              style={{
+                padding: '10px',
+                borderRadius: '6px',
+                border: '2px solid #e8c52b',
+                width: '100%',
+                fontSize: '14px',
+                backgroundColor: utrNumber ? '#f0f0f0' : '#fff'
+              }}
+            />
+            <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Current value: {utrNumber || '(empty)'}</p>
           </div>
 
           <button type="submit" disabled={loading}>
