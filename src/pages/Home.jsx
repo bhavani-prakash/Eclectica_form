@@ -364,7 +364,8 @@ const Home = () => {
                 border: '2px solid #e8c52b',
                 width: '100%',
                 fontSize: '14px',
-                backgroundColor: utrNumber ? '#f0f0f0' : '#fff'
+                backgroundColor: utrNumber ? '#f0f0f0' : '#fff',
+                color: '#0f0e0e'
               }}
             />
             <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Current value: {utrNumber || '(empty)'}</p>
