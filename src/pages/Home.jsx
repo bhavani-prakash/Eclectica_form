@@ -30,7 +30,9 @@ const Home = () => {
     'Paper Presentation',
     'Tech Quiz',
     'Bug Hunters',
-    'Circuit Detective'
+    'Circuit Detective',
+    'Project Expo',
+    'Debate'
   ];
 
   const nonTechEvents = [
@@ -49,6 +51,8 @@ const Home = () => {
     'Tech Quiz': 70,
     'Bug Hunters': 70,
     'Circuit Detective': 70,
+    'Project Expo': 100,
+    'Debate': 0,
     'Free Fire': 200,
     'BGMI': 200,
     'cineQuest': 50,
@@ -65,11 +69,18 @@ const Home = () => {
     if (eventParam && typeParam) {
       setEvent(eventParam);
       setEventType(typeParam);
-      setPaymentAmount(eventFees[eventParam] || 70);
+      setPaymentAmount(eventFees[eventParam] ?? 70);
     }
   }, [searchParams]);
 
-  const API_URL = 'https://eclecticabackend-production-ffd4.up.railway.app' || 'http://localhost:5000';
+  const isProjectExpoEvent = event === 'Project Expo';
+  const isDebateEvent = event === 'Debate';
+
+  const API_URL = import.meta.env.VITE_API_URL || (
+    import.meta.env.DEV
+      ? 'http://localhost:5000'
+      : 'https://eclecticabackend-production-ffd4.up.railway.app'
+  );
 
   // Handle payment submission (for all events - manual payment with screenshot)
   const handlePayment = async (e) => {
@@ -82,12 +93,12 @@ const Home = () => {
       return;
     }
 
-    if (!screenshotFile) {
+    if (!isDebateEvent && !screenshotFile) {
       alert('Please upload payment screenshot');
       return;
     }
 
-    if (!utrNumber || utrNumber.trim() === '') {
+    if (!isDebateEvent && (!utrNumber || utrNumber.trim() === '')) {
       alert('Please enter UTR number');
       console.warn('UTR validation failed. UTR value:', utrNumber);
       return;
@@ -109,10 +120,14 @@ const Home = () => {
       formData.append('year', year);
       formData.append('department', department);
       formData.append('event', event);
-      formData.append('screenshot', screenshotFile);
-      formData.append('paymentStatus', 'success');
+      if (!isDebateEvent && screenshotFile) {
+        formData.append('screenshot', screenshotFile);
+      }
+      formData.append('paymentStatus', isDebateEvent ? 'success' : 'pending');
       formData.append('paymentAmount', paymentAmount);
-      formData.append('utrNumber', utrNumber);
+      if (!isDebateEvent) {
+        formData.append('utrNumber', utrNumber.trim());
+      }
 
       console.log('📤 Sending registration with UTR:', utrNumber);
 
@@ -164,8 +179,13 @@ const Home = () => {
               📋 Selected Event: <span className="event-name">{event}</span>
             </h3>
             <p className="event-registration-fee">
-              Registration Fee: <span className="fee-amount">₹{paymentAmount}</span>
+              Registration Fee: <span className="fee-amount">{isDebateEvent ? 'Free' : `₹${paymentAmount}`}</span>
             </p>
+            {isProjectExpoEvent && (
+              <p style={{ marginTop: '8px', color: '#e8c52b', fontWeight: 'bold' }}>
+                Project Expo fee is 100 rs per team (2 or 3 members).
+              </p>
+            )}
           </div>
         )}
 
@@ -284,8 +304,14 @@ const Home = () => {
                 required
                 value={event}
                 onChange={(e) => {
-                  setEvent(e.target.value);
-                  setPaymentAmount(eventFees[e.target.value] || 100);
+                  const selectedEvent = e.target.value;
+                  setEvent(selectedEvent);
+                  setPaymentAmount(eventFees[selectedEvent] ?? 100);
+
+                  if (selectedEvent === 'Debate') {
+                    setScreenshotFile(null);
+                    setUtrNumber('');
+                  }
                 }}
               >
                 <option value="">Select Event</option>
@@ -302,77 +328,83 @@ const Home = () => {
             </>
           )}
 
-          <div className="payment-section">
-            <h3>Payment</h3>
-            <p>Registration Fee: ₹{paymentAmount}</p>
-            <p style={{ marginTop: '15px', color: '#e8c52b', fontWeight: 'bold' }}>
-              📱 Pay via UPI/Bank Transfer & Upload Screenshot
-            </p>
-            <p style={{ fontSize: '12px', marginTop: '10px' }}>
-              Make payment and upload proof of payment to complete registration
-            </p>
+          {event && !isDebateEvent && (
+            <div className="payment-section">
+              <h3>Payment</h3>
+              <p>Registration Fee: ₹{paymentAmount}</p>
+              <p style={{ marginTop: '15px', color: '#e8c52b', fontWeight: 'bold' }}>
+                📱 Pay via UPI/Bank Transfer & Upload Screenshot
+              </p>
+              <p style={{ fontSize: '12px', marginTop: '10px' }}>
+                Make payment and upload proof of payment to complete registration
+              </p>
 
-            {/* QR Code Display */}
-            <div style={{
-              background: '#fff',
-              padding: '15px',
-              borderRadius: '8px',
-              marginTop: '15px',
-              textAlign: 'center'
-            }}>
-             
-              <img 
-                src={qrImage} 
-                alt="PhonePe QR Code" 
+              {/* QR Code Display */}
+              <div style={{
+                background: '#fff',
+                padding: '15px',
+                borderRadius: '8px',
+                marginTop: '15px',
+                textAlign: 'center'
+              }}>
+                <img 
+                  src={qrImage} 
+                  alt="PhonePe QR Code" 
+                  style={{
+                    width: '250px',
+                    height: '250px',
+                    objectFit: 'contain',
+                    borderRadius: '6px'
+                  }}
+                />
+                <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>Munaga Sreeram</p>
+              </div>
+
+              <label style={{ marginTop: '20px' }}>Upload Payment Screenshot</label>
+              <input
+                type="file"
+                accept="image/*"
+                required
+                onChange={(e) => setScreenshotFile(e.target.files?.[0] || null)}
                 style={{
-                  width: '250px',
-                  height: '250px',
-                  objectFit: 'contain',
-                  borderRadius: '6px'
+                  padding: '10px',
+                  borderRadius: '6px',
+                  border: '2px solid #e8c52b',
+                  width: '100%'
                 }}
               />
-              <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>Munaga Sreeram</p>
-            </div>
-     
-            <label style={{ marginTop: '20px' }}>Upload Payment Screenshot</label>
-            <input
-              type="file"
-              accept="image/*"
-              required
-              onChange={(e) => setScreenshotFile(e.target.files?.[0] || null)}
-              style={{
-                padding: '10px',
-                borderRadius: '6px',
-                border: '2px solid #e8c52b',
-                width: '100%'
-              }}
-            />
 
-            <label style={{ marginTop: '15px' }}>UTR Number <span style={{ color: 'red' }}>*</span></label>
-            <input
-              type="text"
-              placeholder="Enter UTR/Reference Number"
-              required
-              value={utrNumber}
-              onChange={(e) => {
-                console.log('UTR input changed:', e.target.value);
-                setUtrNumber(e.target.value);
-              }}
-              style={{
-                padding: '10px',
-                borderRadius: '6px',
-                border: '2px solid #e8c52b',
-                width: '100%',
-                fontSize: '14px',
-                backgroundColor: utrNumber ? '#f0f0f0' : '#fff',
-                color: '#0f0e0e'
-              }}
-            />
-            <p style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>Current value: {utrNumber || '(empty)'}</p>
-          </div>
+              <label style={{ marginTop: '15px' }}>UTR Number <span style={{ color: 'red' }}>*</span></label>
+              <input
+                type="text"
+                placeholder="Enter UTR/Reference Number"
+                required
+                value={utrNumber}
+                onChange={(e) => setUtrNumber(e.target.value)}
+                style={{
+                  padding: '10px',
+                  borderRadius: '6px',
+                  border: '2px solid #e8c52b',
+                  width: '100%',
+                  fontSize: '14px',
+                  color: '#0f0e0e'
+                }}
+              />
+            </div>
+          )}
+
+          {event && isDebateEvent && (
+            <div className="payment-section">
+              <h3>Registration</h3>
+              <p>Registration Fee: Free</p>
+              <p style={{ marginTop: '10px', color: '#06D6A0', fontWeight: 'bold' }}>
+                Debate is a free event. Payment screenshot and UTR number are not required.
+              </p>
+            </div>
+          )}
 
           <button type="submit" disabled={loading}>
-            {loading ? "Processing..." : `Submit Registration (₹${paymentAmount})`}
+            {loading ? "Processing..." : isDebateEvent ? "Submit Registration (Free)" : `Submit Registration (₹${paymentAmount})`}
           </button>
           
           <p>{loading ? "Please complete the payment to register. Do not refresh the page." : " "}</p>

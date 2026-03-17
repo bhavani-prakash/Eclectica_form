@@ -11,7 +11,9 @@ const Tech = () => {
     { name: 'Bug Hunters', fee: 70 },
     { name: 'Circuit Detective', fee: 70 },
     { name: 'Paper Presentation', fee: 70 },
-    { name: 'Poster Presentation', fee: 70 }
+    { name: 'Poster Presentation', fee: 70 },
+    { name: 'Project Expo', fee: 100, note: 'Per team (2 or 3 members)' },
+    { name: 'Debate', fee: 0, note: 'Free event' }
   ];
 
   const handleRegister = (eventName, eventFee) => {
@@ -59,7 +61,10 @@ const Tech = () => {
           {technicalEvents.map((event, index) => (
             <div key={index} className="event-card">
               <h3>{event.name}</h3>
-              <p className="event-fee">₹{event.fee}</p>
+              <p className="event-fee">{event.fee === 0 ? 'Free' : `₹${event.fee}`}</p>
+              {event.note && (
+                <p style={{ marginTop: '8px', fontSize: '13px', color: '#f5e6a1' }}>{event.note}</p>
+              )}
               <button 
                 className="register-btn"
                 onClick={() => handleRegister(event.name, event.fee)}
