@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { buildApiUrl, callApiWithFallback } from '../config/api'
 
 const Admin = () => {
     const[loading,setLoading]=useState(false);
@@ -13,9 +14,8 @@ const Admin = () => {
     const handleLogin = async () => {
     try {
       setLoading(true);
-      const res = await axios.post(
-        'https://eclecticabackend-production-ffd4.up.railway.app/admin/login',
-        { email, password }
+      const res = await callApiWithFallback((baseUrl) =>
+        axios.post(buildApiUrl(baseUrl, '/admin/login'), { email, password }, { timeout: 15000 })
       );
 
       localStorage.setItem('adminToken', res.data.token);
@@ -23,7 +23,11 @@ const Admin = () => {
       navigate('/admin/dashboard');
     } catch (err) {
       setLoading(false);
-      alert('Invalid admin credentials');
+      if (err?.response?.status === 401) {
+        alert('Invalid admin credentials');
+      } else {
+        alert('Unable to connect to backend. Please try again in a moment.');
+      }
     }
   };
 

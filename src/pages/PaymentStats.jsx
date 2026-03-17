@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PacmanLoader from "react-spinners/PacmanLoader";
+import { buildApiUrl, callApiWithFallback } from "../config/api";
 
 function PaymentStats() {
   const [loading, setLoading] = useState(true);
@@ -9,18 +10,18 @@ function PaymentStats() {
   const [paymentData, setPaymentData] = useState(null);
   const navigate = useNavigate();
 
-  const API_URL = "https://eclecticabackend-production-ffd4.up.railway.app";
-
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     fetchPaymentStats(token);
   }, []);
 
   const fetchPaymentStats = (token) => {
-    axios
-      .get(`${API_URL}/admin/payment-stats`, {
-        headers: { Authorization: `Bearer ${token}` }
+    callApiWithFallback((baseUrl) =>
+      axios.get(buildApiUrl(baseUrl, "/admin/payment-stats"), {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 15000,
       })
+    )
       .then((res) => {
         setPaymentData(res.data.data);
         setLoading(false);

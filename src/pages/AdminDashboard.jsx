@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PacmanLoader from "react-spinners/PacmanLoader";
+import { buildApiUrl, callApiWithFallback } from "../config/api";
 
 
 function AdminDashboard() {
@@ -37,10 +38,12 @@ function AdminDashboard() {
 
   // ✅ Fetch Data
   useEffect(() => {
-    axios
-      .get(
-        "https://eclecticabackend-production-ffd4.up.railway.app/admin/dashboard")
-      .then((res) => setData(res.data.data))
+    callApiWithFallback((baseUrl) =>
+      axios.get(buildApiUrl(baseUrl, "/admin/dashboard"), {
+        timeout: 15000,
+      })
+    )
+      .then((res) => setData(res?.data?.data || []))
       .catch((error) => {
         console.error("Error fetching dashboard:", error);
       })
@@ -244,9 +247,9 @@ function AdminDashboard() {
                   <td>{user.college}</td>
                   <td>{formatDate(user.createdAt)}</td>
                   <td>
-                    {user.imageUrl || user.razorpay_signature ? (
+                    {user.imageUrl ? (
                       <button 
-                        onClick={() => openImageModal(user.imageUrl || user.razorpay_signature)}
+                        onClick={() => openImageModal(user.imageUrl)}
                         style={{
                           backgroundColor: '#06D6A0',
                           color: '#000',

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import qrImage from '../assets/qr.jpeg';
+import { buildApiUrl, callApiWithFallback } from '../config/api';
 
 import '../index.css'
 
@@ -82,12 +83,6 @@ const Home = () => {
   const isProjectExpoEvent = event === 'Project Expo';
   const isDebateEvent = event === 'Debate';
 
-  const API_URL = import.meta.env.VITE_API_URL || (
-    import.meta.env.DEV
-      ? 'http://localhost:5000'
-      : 'https://eclecticabackend-production-ffd4.up.railway.app'
-  );
-
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const isRetryableRequestError = (error) => {
@@ -98,21 +93,23 @@ const Home = () => {
     return error?.message === 'Network Error' || error?.code === 'ECONNABORTED';
   };
 
-  const postRegistrationWithRetry = async (endpoint, buildFormData) => {
+  const postRegistrationWithRetry = async (endpointPath, buildFormData) => {
+    const submitRegistration = () =>
+      callApiWithFallback((baseUrl) =>
+        axios.post(buildApiUrl(baseUrl, endpointPath), buildFormData(), {
+          timeout: MOBILE_REQUEST_TIMEOUT_MS,
+        })
+      );
+
     try {
-      return await axios.post(endpoint, buildFormData(), {
-        timeout: MOBILE_REQUEST_TIMEOUT_MS
-      });
+      return await submitRegistration();
     } catch (error) {
       if (!isRetryableRequestError(error)) {
         throw error;
       }
 
       await sleep(RETRY_DELAY_MS);
-
-      return axios.post(endpoint, buildFormData(), {
-        timeout: MOBILE_REQUEST_TIMEOUT_MS
-      });
+      return submitRegistration();
     }
   };
 
@@ -192,7 +189,7 @@ const Home = () => {
       return;
     }
 
-    const endpoint = `${API_URL.replace(/\/$/, '')}/api/manual-registration`;
+    const endpointPath = '/api/manual-registration';
 
     const buildFormData = () => {
       const formData = new FormData();
@@ -225,7 +222,7 @@ const Home = () => {
 
       console.log('📤 Sending registration with UTR:', utrNumber);
 
-      const response = await postRegistrationWithRetry(endpoint, buildFormData);
+      const response = await postRegistrationWithRetry(endpointPath, buildFormData);
       const responseMessage = response?.data?.message || '';
       const isDuplicateRegistration = responseMessage.toLowerCase().includes('already registered');
 
