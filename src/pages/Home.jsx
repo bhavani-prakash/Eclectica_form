@@ -25,6 +25,12 @@ const Home = () => {
   const [screenshotFile, setScreenshotFile] = useState(null);
   const [utrNumber, setUtrNumber] = useState('');
 
+  const MAX_SCREENSHOT_SIZE_BYTES = 12 * 1024 * 1024; // 12 MB
+  const MOBILE_REQUEST_TIMEOUT_MS = 60000;
+  const RETRY_DELAY_MS = 1500;
+  const SUPPORTED_SCREENSHOT_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'jfif'];
+  const SUPPORTED_SCREENSHOT_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+
   const technicalEvents = [
     'Poster Presentation',
     'Paper Presentation',
@@ -82,13 +88,95 @@ const Home = () => {
       : 'https://eclecticabackend-production-ffd4.up.railway.app'
   );
 
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const isRetryableRequestError = (error) => {
+    if (error?.response) {
+      return false;
+    }
+
+    return error?.message === 'Network Error' || error?.code === 'ECONNABORTED';
+  };
+
+  const postRegistrationWithRetry = async (endpoint, buildFormData) => {
+    try {
+      return await axios.post(endpoint, buildFormData(), {
+        timeout: MOBILE_REQUEST_TIMEOUT_MS
+      });
+    } catch (error) {
+      if (!isRetryableRequestError(error)) {
+        throw error;
+      }
+
+      await sleep(RETRY_DELAY_MS);
+
+      return axios.post(endpoint, buildFormData(), {
+        timeout: MOBILE_REQUEST_TIMEOUT_MS
+      });
+    }
+  };
+
+  const handleScreenshotChange = (e) => {
+    const file = e.target.files?.[0] || null;
+
+    if (!file) {
+      setScreenshotFile(null);
+      return;
+    }
+
+    const fileExtension = file.name.includes('.')
+      ? file.name.split('.').pop().toLowerCase()
+      : '';
+
+    const fileType = (file.type || '').toLowerCase();
+    const isSupportedExtension = fileExtension ? SUPPORTED_SCREENSHOT_EXTENSIONS.includes(fileExtension) : false;
+    const isSupportedMimeType = fileType ? SUPPORTED_SCREENSHOT_MIME_TYPES.includes(fileType) : false;
+    const isGenericImageMimeType = fileType.startsWith('image/');
+
+    if (!isSupportedExtension && !isSupportedMimeType && !isGenericImageMimeType) {
+      alert('Unsupported file type. Please upload JPG, JPEG, PNG, WEBP, HEIC, or HEIF image.');
+      e.target.value = '';
+      setScreenshotFile(null);
+      return;
+    }
+
+    if (file.size > MAX_SCREENSHOT_SIZE_BYTES) {
+      alert('Image size is too large. Please upload an image smaller than 12 MB.');
+      e.target.value = '';
+      setScreenshotFile(null);
+      return;
+    }
+
+    setScreenshotFile(file);
+  };
+
   // Handle payment submission (for all events - manual payment with screenshot)
   const handlePayment = async (e) => {
     e.preventDefault();
 
+    if (loading) {
+      return;
+    }
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      alert('You appear to be offline. Please connect to the internet and try again.');
+      return;
+    }
+
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim();
+    const normalizedCollege = college.trim();
+    const normalizedRollnumber = rollnumber.trim();
+    const normalizedContactnumber = contactnumber.trim();
+    const normalizedWhatsappnumber = whatsappnumber.trim();
+    const normalizedYear = year.trim();
+    const normalizedDepartment = department.trim();
+    const normalizedEvent = event.trim();
+    const normalizedUtrNumber = utrNumber.trim();
+
     // Validate all fields
-    if (!name || !email || !college || !rollnumber || !contactnumber || 
-        !whatsappnumber || !year || !department || !event) {
+    if (!normalizedName || !normalizedEmail || !normalizedCollege || !normalizedRollnumber || !normalizedContactnumber || 
+        !normalizedWhatsappnumber || !normalizedYear || !normalizedDepartment || !normalizedEvent) {
       alert('Please fill in all fields');
       return;
     }
@@ -98,45 +186,55 @@ const Home = () => {
       return;
     }
 
-    if (!isDebateEvent && (!utrNumber || utrNumber.trim() === '')) {
+    if (!isDebateEvent && !normalizedUtrNumber) {
       alert('Please enter UTR number');
-      console.warn('UTR validation failed. UTR value:', utrNumber);
+      console.warn('UTR validation failed. UTR value:', normalizedUtrNumber);
       return;
     }
+
+    const endpoint = `${API_URL.replace(/\/$/, '')}/api/manual-registration`;
+
+    const buildFormData = () => {
+      const formData = new FormData();
+      formData.append('name', normalizedName);
+      formData.append('email', normalizedEmail);
+      formData.append('college', normalizedCollege);
+      formData.append('rollnumber', normalizedRollnumber);
+      formData.append('contactnumber', normalizedContactnumber);
+      formData.append('whatsappnumber', normalizedWhatsappnumber);
+      formData.append('year', normalizedYear);
+      formData.append('department', normalizedDepartment);
+      formData.append('event', normalizedEvent);
+
+      if (!isDebateEvent && screenshotFile) {
+        formData.append('screenshot', screenshotFile);
+      }
+
+      formData.append('paymentStatus', isDebateEvent ? 'success' : 'pending');
+      formData.append('paymentAmount', paymentAmount);
+
+      if (!isDebateEvent) {
+        formData.append('utrNumber', normalizedUtrNumber);
+      }
+
+      return formData;
+    };
 
     try {
       setLoading(true);
 
-      // Store registration with screenshot
-      const endpoint = `${API_URL.replace(/\/$/, '')}/api/manual-registration`;
-
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('college', college);
-      formData.append('rollnumber', rollnumber);
-      formData.append('contactnumber', contactnumber);
-      formData.append('whatsappnumber', whatsappnumber);
-      formData.append('year', year);
-      formData.append('department', department);
-      formData.append('event', event);
-      if (!isDebateEvent && screenshotFile) {
-        formData.append('screenshot', screenshotFile);
-      }
-      formData.append('paymentStatus', isDebateEvent ? 'success' : 'pending');
-      formData.append('paymentAmount', paymentAmount);
-      if (!isDebateEvent) {
-        formData.append('utrNumber', utrNumber.trim());
-      }
-
       console.log('📤 Sending registration with UTR:', utrNumber);
 
-      const response = await axios.post(endpoint, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await postRegistrationWithRetry(endpoint, buildFormData);
+      const responseMessage = response?.data?.message || '';
+      const isDuplicateRegistration = responseMessage.toLowerCase().includes('already registered');
 
       if (response.data.success) {
-        alert('Registration Successful! 🎉\n\nYour registration has been submitted successfully. Thank you for registering!');
+        alert(
+          isDuplicateRegistration
+            ? `${responseMessage}\n\nIf this was your submission, no further action is needed.`
+            : 'Registration Successful! 🎉\n\nYour registration has been submitted successfully. Thank you for registering!'
+        );
         setName('');
         setEmail('');
         setCollege('');
@@ -149,12 +247,23 @@ const Home = () => {
         setEventType('');
         setScreenshotFile(null);
         setUtrNumber('');
-        setLoading(false);
         navigate('/greeting');
+      } else {
+        alert(response?.data?.message || 'Could not complete registration. Please try again.');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Error submitting registration. Please try again.');
+
+      if (error?.response?.data?.message) {
+        alert(error.response.data.message);
+      } else if (error?.code === 'ECONNABORTED') {
+        alert('Request timed out on mobile network. Please retry with a stable connection.');
+      } else if (error?.message === 'Network Error') {
+        alert('Unable to reach server. Please check your internet connection and try again.');
+      } else {
+        alert('Error submitting registration. Please try again.');
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -365,7 +474,7 @@ const Home = () => {
                 type="file"
                 accept="image/*"
                 required
-                onChange={(e) => setScreenshotFile(e.target.files?.[0] || null)}
+                onChange={handleScreenshotChange}
                 style={{
                   padding: '10px',
                   borderRadius: '6px',
@@ -373,6 +482,9 @@ const Home = () => {
                   width: '100%'
                 }}
               />
+              <p style={{ fontSize: '12px', marginTop: '8px', color: '#f5e6a1' }}>
+                Supported: JPG, PNG, WEBP, HEIC, HEIF. Max size: 12 MB.
+              </p>
 
               <label style={{ marginTop: '15px' }}>UTR Number <span style={{ color: 'red' }}>*</span></label>
               <input
