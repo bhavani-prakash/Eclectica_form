@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
-// import phonepeQR from '../assets/phonepe-qr.png';
+import qrImage from '../assets/qr.jpeg';
 
 import '../index.css'
 
@@ -320,23 +320,20 @@ const Home = () => {
               marginTop: '15px',
               textAlign: 'center'
             }}>
-              <div style={{
-                width: '200px',
-                height: '200px',
-                background: '#ddd',
-                margin: '0 auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '6px',
-                color: '#333',
-                fontSize: '14px'
-              }}>
-                {/* Replace with actual QR code image */}
-                <span>📲 QR Code Here</span>
-              </div>
+             
+              <img 
+                src={qrImage} 
+                alt="PhonePe QR Code" 
+                style={{
+                  width: '250px',
+                  height: '250px',
+                  objectFit: 'contain',
+                  borderRadius: '6px'
+                }}
+              />
+              <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>Munaga Sreeram</p>
             </div>
-
+     
             <label style={{ marginTop: '20px' }}>Upload Payment Screenshot</label>
             <input
               type="file"
